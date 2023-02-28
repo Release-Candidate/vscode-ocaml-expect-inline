@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../OCaml-Interp"
+		}
+	],
+	"settings": {
+		"cSpell.words": [
+			"expectppx",
+			"opam",
+			"VSIX"
+		]
+	}
+}

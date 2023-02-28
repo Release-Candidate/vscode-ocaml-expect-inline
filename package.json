@@ -1,0 +1,109 @@
+{
+    "name": "vscode-ocaml-expect-inline",
+    "displayName": "OCaml Expect and Inline Tests",
+    "version": "0.1.0",
+    "preview": false,
+    "publisher": "release-candidate",
+    "description": "Support for OCaml Expect PPX and inline PPX tests.",
+    "keywords": [
+        "OCaml",
+        "Expect",
+        "Test",
+        "Inline",
+        "Test Explorer",
+        "multi-root ready"
+    ],
+    "markdown": "github",
+    "qna": "marketplace",
+    "categories": [
+        "Testing"
+    ],
+    "icon": "images/inline_ppx_logo.png",
+    "capabilities": {
+        "untrustedWorkspaces": {
+            "supported": false,
+            "description": "Do not run tests in untrusted workspaces because tests can execute arbitrary code!"
+        }
+    },
+    "activationEvents": [
+        "onLanguage:ocaml",
+        "onLanguage:dune",
+        "onLanguage:dune-project",
+        "onLanguage:dune-workspace",
+        "workspaceContains:**/dune-workspace",
+        "workspaceContains:**/dune",
+        "workspaceContains:**/dune-project",
+        "workspaceContains:**/*.opam",
+        "workspaceContains:**/*.ml",
+        "workspaceContains:**/*.mli",
+        "workspaceContains:**/*.mll",
+        "workspaceContains:**/*.mly"
+    ],
+    "main": "./out/extension",
+    "license": "SEE LICENSE IN LICENSE",
+    "bugs": {
+        "url": "https://github.com/Release-Candidate/vscode-ocaml-expect-inline/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Release-Candidate/vscode-ocaml-expect-inline.git"
+    },
+    "homepage": "https://github.com/Release-Candidate/vscode-ocaml-expect-inline/blob/main/README.md",
+    "pricing": "Free",
+    "engines": {
+        "vscode": "^1.59.0"
+    },
+    "contributes": {
+        "configuration": {
+            "title": "Expect and Inline Tests",
+            "properties": {
+                "expectppx.discoverOnStartup": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Run test discovery on extension startup? If this is false, only tests in open files are added to the Test Explorer tree."
+                }
+            }
+        }
+    },
+    "devDependencies": {
+        "@types/chai": "^4.3.4",
+        "@types/glob": "^8.1.0",
+        "@types/mocha": "^10.0.1",
+        "@types/node": "^18.14.2",
+        "@types/vscode": "1.59.0",
+        "@typescript-eslint/eslint-plugin": "^5.54.0",
+        "@typescript-eslint/parser": "^5.54.0",
+        "@vscode/test-electron": "^2.2.3",
+        "@vscode/vsce": "^2.18.0",
+        "chai": "^4.3.7",
+        "del-cli": "^5.0.0",
+        "esbuild": "^0.17.10",
+        "eslint": "^8.35.0",
+        "eslint-plugin-chai-friendly": "^0.7.2",
+        "eslint-plugin-mocha": "^10.1.0",
+        "glob": "^9.0.1",
+        "mocha": "^10.2.0",
+        "source-map-support": "^0.5.21",
+        "ts-node": "^10.9.1",
+        "tsconfig-paths": "^4.1.2",
+        "typescript": "^4.9.5"
+    },
+    "vsce": {
+        "dependencies": true,
+        "yarn": true
+    },
+    "scripts": {
+        "clean": "del-cli -- out",
+        "lint": "eslint src/**/*.ts test/**/*.ts",
+        "lint-github": "eslint src/**/*.ts test/**/*.ts -o ./eslint_report.json -f json",
+        "compile": "tsc -p ./",
+        "test": "yarn --ignore-engines run compile && node out/test/runner.js",
+        "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+        "esbuild": "yarn --ignore-engines run esbuild-base --sourcemap",
+        "esbuild-watch": "yarn --ignore-engines run esbuild-base --sourcemap --watch",
+        "bundle": "yarn --ignore-engines run esbuild-base --minify",
+        "vscode:prepublish": "yarn --ignore-engines run bundle",
+        "package": "vsce package",
+        "publish-vsix": "vsce publish"
+    }
+}
