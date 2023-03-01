@@ -86,17 +86,17 @@ async function runSingleTest(env: h.Env, test: vscode.TestItem) {
         }    ${test?.label}"`
     );
     if (ret) {
-        const { root, runner } = ret;
+        const { root, runner, library, file } = ret;
         const startTime = Date.now();
         test.busy = true;
         const out = await io.runRunnerTestsDune({
             root,
             runner,
-            library: ret.library,
+            library,
             tests: [`${test.parent?.label}:${test.id}`],
         });
 
-        await parseTestResult(env, { out, startTime, test });
+        await parseTestResult(env, { out, startTime, test, root, file });
         // eslint-disable-next-line require-atomic-updates
         test.busy = false;
         env.run?.appendOutput(`${out.stdout?.replace(/\n/gu, "\r\n")}`);
@@ -109,34 +109,46 @@ async function runSingleTest(env: h.Env, test: vscode.TestItem) {
  * @param env The environment needed for the parsing.
  * @param data The data to parse and construct the test result.
  */
+// eslint-disable-next-line max-statements
 async function parseTestResult(
     env: h.Env,
     data: {
         out: io.Output;
         startTime: number;
         test: vscode.TestItem;
+        root: vscode.WorkspaceFolder;
+        file: string;
     }
 ) {
-    env.outChannel.appendLine(
-        `Test output:\n${data.out.stdout}${data.out.stderr}${
-            data.out.error ? data.out.error : ""
-        }`
+    const output = data.out.stdout?.concat(
+        data.out.stderr ? data.out.stderr : ""
     );
-    if (data.out.error || data.out.stderr?.length) {
+    env.outChannel.appendLine(
+        `Test output:\n${output}${data.out.error ? data.out.error : ""}`
+    );
+    if (data.out.error) {
         const msg = data.out.stderr?.length
             ? data.out.stderr
             : (data.out.error as string);
         await setRunnerError(env, msg, data.test);
         return;
     }
-
-    const [errList] = p.parseTestErrors(data.out.stdout as string);
-    const errElem = errList?.tests.find((e) => `${e.line}` === data.test.id);
-    if (errElem) {
-        await setTestError(env, data, errElem);
-    } else {
-        env.run?.passed(data.test, Date.now() - data.startTime);
+    if (output) {
+        if (p.isCompileError(output)) {
+            const msg = data.out.stderr?.length ? data.out.stderr : output;
+            await setRunnerError(env, msg, data.test);
+            return;
+        }
+        const [errList] = p.parseTestErrors(output);
+        const errElem = errList?.tests.find(
+            (e) => `${e.line}` === data.test.id
+        );
+        if (errElem) {
+            await setTestError(env, data, errElem);
+            return;
+        }
     }
+    env.run?.passed(data.test, Date.now() - data.startTime);
 }
 
 /**
@@ -150,9 +162,11 @@ async function setTestError(
     data: { out: io.Output; startTime: number; test: vscode.TestItem },
     errElem: p.TestType
 ) {
-    data.test.label = errElem.name;
+    const output = data.out.stdout?.concat(
+        data.out.stderr ? data.out.stderr : ""
+    );
     let message = await constructMessage({
-        txt: data.out.stdout ? data.out.stdout : "",
+        txt: output ? output : "",
         test: data.test,
         testData: env.testData,
         errElem,

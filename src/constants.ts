@@ -13,6 +13,11 @@
 import * as vscode from "vscode";
 
 /**
+ * The version of VS Code to use for testing.
+ */
+export const vscodeVersion = "1.65.0";
+
+/**
  * The `id` parameter of `createTestController`.
  * Shall be a globally unique ID.
  */

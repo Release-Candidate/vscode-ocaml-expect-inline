@@ -1,5 +1,7 @@
 # OCaml Expect and Inline Test Explorer for Visual Studio Code
 
+[![Lint](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/actions/workflows/lint.yml/badge.svg)](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/actions/workflows/lint.yml)
+[![Release](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/actions/workflows/release.yml/badge.svg)](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/actions/workflows/release.yml)
 [![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/Release-Candidate.vscode-ocaml-expect-inline)](https://marketplace.visualstudio.com/items?itemName=release-candidate.vscode-ocaml-expect-inline)
 [![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/Release-Candidate.vscode-ocaml-expect-inline)](https://marketplace.visualstudio.com/items?itemName=release-candidate.vscode-ocaml-expect-inline)
 [![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/Release-Candidate.vscode-ocaml-expect-inline)](https://marketplace.visualstudio.com/items?itemName=release-candidate.vscode-ocaml-expect-inline)
@@ -17,6 +19,7 @@ This extension lets you run OCaml [PPX Expect](https://github.com/janestreet/ppx
   - [Installation](#installation)
   - [Q \& A](#q--a)
     - [Q: What do the groups in the Test Explorer view mean?](#q-what-do-the-groups-in-the-test-explorer-view-mean)
+    - [Q: A test has been added, how can I add that to the Test Explorer?](#q-a-test-has-been-added-how-can-i-add-that-to-the-test-explorer)
     - [Q: Where can I see the output of the test run(s)?](#q-where-can-i-see-the-output-of-the-test-runs)
     - [Q: What does the red circle with a point in the middle mean?](#q-what-does-the-red-circle-with-a-point-in-the-middle-mean)
     - [Q: Where can I see the log of the extension?](#q-where-can-i-see-the-log-of-the-extension)
@@ -44,7 +47,7 @@ This extension lets you run OCaml [PPX Expect](https://github.com/janestreet/ppx
 
 ### Dependencies
 
-- Visual Studio Code version >= 1.59 (Juli 2021)
+- Visual Studio Code version 1.65 (February 2022) or higher
 - [PPX Expect](https://github.com/janestreet/ppx_expect) or [PPX Inline Test](https://github.com/janestreet/ppx_inline_test)
 - [Dune](https://dune.build/) the extension uses Dune to build and run the test runners.
 
@@ -65,6 +68,12 @@ Either
 ![The Test Explorer's tree view](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/treeview.png)
 
 A: Every workspace folder in the current project has it's own node, `Workspace: WORKSPACE_NAME`. If the project is a single workspace, only one of these exists. A group `Expect and Inline Tests` containing all inline PPX and expect PPX tests. In these subtrees the test cases are grouped by filename.
+
+#### Q: A test has been added, how can I add that to the Test Explorer?
+
+![Animation of the Refresh Tests button](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/refresh_tests.gif)
+
+A: Push the Refresh Tests button in the upper right of the Test Explorer view or run any test case to re-discover all tests in the same workspace.
 
 #### Q: Where can I see the output of the test run(s)?
 
@@ -88,7 +97,7 @@ A: In the `OUTPUT` tab of the Panel, you have to select the extension named `Exp
 
 ## Configuration
 
-- `[]` run tests on start
+- `expectppx.discoverOnStartup` - Boolean. Set this to `false` if you do not want to run all expect and inline tests on startup to discover tests. If you want to rediscover all test by running all inline test runners, use the `Refresh Tests` button in the upper right corner of the Test Explorer.
 
 ## Changes
 

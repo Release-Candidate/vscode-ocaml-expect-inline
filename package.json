@@ -51,7 +51,7 @@
     "homepage": "https://github.com/Release-Candidate/vscode-ocaml-expect-inline/blob/main/README.md",
     "pricing": "Free",
     "engines": {
-        "vscode": "^1.59.0"
+        "vscode": "^1.65.0"
     },
     "contributes": {
         "configuration": {
@@ -70,10 +70,10 @@
         "@types/glob": "^8.1.0",
         "@types/mocha": "^10.0.1",
         "@types/node": "^18.14.2",
-        "@types/vscode": "1.59.0",
+        "@types/vscode": "1.65.0",
         "@typescript-eslint/eslint-plugin": "^5.54.0",
         "@typescript-eslint/parser": "^5.54.0",
-        "@vscode/test-electron": "^2.2.3",
+        "@vscode/test-electron": "^2.3.0",
         "@vscode/vsce": "^2.18.0",
         "chai": "^4.3.7",
         "del-cli": "^5.0.0",
@@ -81,7 +81,7 @@
         "eslint": "^8.35.0",
         "eslint-plugin-chai-friendly": "^0.7.2",
         "eslint-plugin-mocha": "^10.1.0",
-        "glob": "^9.0.1",
+        "glob": "^9.1.0",
         "mocha": "^10.2.0",
         "source-map-support": "^0.5.21",
         "ts-node": "^10.9.1",

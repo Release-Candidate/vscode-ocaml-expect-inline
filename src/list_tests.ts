@@ -198,6 +198,9 @@ async function parseTestListOutput(
                 root: data.root,
                 suiteLabel: data.suiteLabel,
                 rPath: data.rPath,
+                line: t.line,
+                startCol: t.startCol,
+                endCol: t.endCol,
             });
         }
 
@@ -288,7 +291,6 @@ async function addTestItem(
             file: data.sourcePath.path,
         });
     }
-    testItem.range = h.toRange(data.line, data.startCol, data.endCol);
 }
 
 /**
@@ -311,13 +313,21 @@ function getTestItem(data: {
     let item = data.parent.children.get(data.id);
     if (item) {
         item.label = data.label;
-        item.range = h.toRange(data.line, data.colStart, data.colEnd);
+        item.range = h.toRange(
+            data.line ? data.line - 1 : 0,
+            data.colStart,
+            data.colEnd
+        );
         return item;
     }
 
     item = data.controller.createTestItem(data.id, data.label, data.uri);
     if (data.line) {
-        item.range = h.toRange(data.line, data.colStart, data.colEnd);
+        item.range = h.toRange(
+            data.line ? data.line - 1 : 0,
+            data.colStart,
+            data.colEnd
+        );
     }
 
     data.parent.children.add(item);

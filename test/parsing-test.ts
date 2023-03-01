@@ -15,6 +15,7 @@ import * as duneTests from "./fixtures/dune_tests";
 import * as mocha from "mocha";
 import * as parse from "../src/parsing";
 import * as testErrors from "./fixtures/test_errors";
+import * as testLists from "./fixtures/test_lists";
 import * as testSources from "./fixtures/test_sources";
 import * as vscode from "vscode";
 
@@ -335,6 +336,53 @@ mocha.describe("Parsing Functions", () => {
         });
     });
     //==========================================================================
+    mocha.describe("isCompileError", () => {
+        mocha.it("Empty string -> false", () => {
+            chai.assert.deepEqual(
+                parse.isCompileError(""),
+                false,
+                "Empty string -> false"
+            );
+        });
+        mocha.it("Compiler error -> true", () => {
+            chai.assert.deepEqual(
+                parse.isCompileError(testErrors.compilerError),
+                true,
+                "compilerError -> true"
+            );
+        });
+        mocha.it("Compiler error 2 -> true", () => {
+            chai.assert.deepEqual(
+                parse.isCompileError(testErrors.compilerError2),
+                true,
+                "compilerError2 -> true"
+            );
+        });
+        mocha.it("Compiler error 3 -> true", () => {
+            chai.assert.deepEqual(
+                parse.isCompileError(testErrors.compilerError3),
+                true,
+                "compilerError3 -> true"
+            );
+        });
+        mocha.it("List of tests -> false", () => {
+            chai.assert.deepEqual(
+                parse.isCompileError(testLists.normalList),
+                false,
+                "normalList -> false"
+            );
+        });
+        mocha.it("test failure -> false", () => {
+            chai.assert.deepEqual(
+                parse.isCompileError(
+                    testErrors.expectError1.concat(testErrors.expectError2)
+                ),
+                false,
+                "expectError1 + expectError2 -> false"
+            );
+        });
+    });
+    //==========================================================================
     mocha.describe("parseTestList", () => {
         mocha.it("Empty string -> empty list", () => {
             chai.assert.deepEqual(
@@ -348,6 +396,13 @@ mocha.describe("Parsing Functions", () => {
                 parse.parseTestList("bfls bdsfbl bdfbs GT  dsjkafôdsafk"),
                 [],
                 "'bfls bdsfbl bdfbs GT  dsjkafôdsafk' -> empty list"
+            );
+        });
+        mocha.it("Real output -> test list", () => {
+            chai.assert.deepEqual(
+                parse.parseTestList(testLists.normalList),
+                testLists.normalListObject,
+                "normalList -> normalListObject"
             );
         });
     });
@@ -365,6 +420,27 @@ mocha.describe("Parsing Functions", () => {
                 parse.parseTestErrors("bfls bdsfbl bdfbs GT  dsjkafôdsafk"),
                 [],
                 "'bfls bdsfbl bdfbs GT  dsjkafôdsafk' -> empty list"
+            );
+        });
+        mocha.it("Failed expect test -> one test", () => {
+            chai.assert.deepEqual(
+                parse.parseTestErrors(testErrors.expectError1),
+                testErrors.expectError1Object,
+                "expectError1 -> expectError1Object"
+            );
+        });
+        mocha.it("Failed expect test 2 -> one test", () => {
+            chai.assert.deepEqual(
+                parse.parseTestErrors(testErrors.expectError2),
+                testErrors.expectError2Object,
+                "expectError2 -> expectError2Object"
+            );
+        });
+        mocha.it("No errors -> no errors", () => {
+            chai.assert.deepEqual(
+                parse.parseTestErrors(testLists.normalList),
+                [],
+                "normalList -> []"
             );
         });
     });

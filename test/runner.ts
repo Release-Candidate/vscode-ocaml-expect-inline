@@ -10,6 +10,7 @@
  * The VS Code test runner, to run tests needing the `vscode` module.
  */
 
+import * as c from "../src/constants";
 import { runTests } from "@vscode/test-electron";
 import path = require("path");
 
@@ -33,7 +34,7 @@ async function main() {
         await runTests({
             extensionDevelopmentPath,
             extensionTestsPath,
-            version: "1.59.0",
+            version: c.vscodeVersion,
             launchArgs: [extensionDevelopmentPath],
         });
     } catch (err) {

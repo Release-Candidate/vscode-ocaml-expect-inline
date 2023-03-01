@@ -43,6 +43,16 @@ export type Output = {
 };
 
 /**
+ * Return the relative path to `root` of `absPath`.
+ * @param root The root part of the directory to remove.
+ * @param absPath The absolute path to make relative to `root`
+ * @returns The relative path to `root` of `absPath`.
+ */
+export function toRelativePath(root: vscode.Uri, absPath: string) {
+    return absPath.replace(root.path, "").replace(/^\//u, "");
+}
+
+/**
  * Check which of the given relative directories exist and are directories.
  * Return a list of directories, so that for all of the returned directories
  * path holds: `root`/path exists and path is in `dirs`.
@@ -154,6 +164,12 @@ export async function findFilesRelative(
     }
 }
 
+/**
+ * Return the relative path of `append` appended to `dir`.
+ * @param dir The directory to append to.
+ * @param append The path to append to `dir`.
+ * @returns The relative path of `append` appended to `dir`.
+ */
 export function concatRelativePaths(dir: string, append: string) {
     return path.normalize(dir.concat("/" + append));
 }

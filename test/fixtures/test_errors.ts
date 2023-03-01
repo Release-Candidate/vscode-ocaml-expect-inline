@@ -14,326 +14,243 @@
 /**
  * The output of a test runner if no tests have been found to run.
  */
-export const noTestsFound = `Invalid request (no tests to run, filter skipped everything)!
+export const noTestsFound = `ppx_inline_test error: the following -only-test flags matched nothing: lib/interp_common.ml:57.
 `;
 
 /**
- * This test failed because of an exception.
- *  * The error is: suite: 'AlOcaml', group: 'Environment Model tests', id: 4,
- * name: '11.+    11'.
+ * A compiler error.
  */
-export const exceptionError = `Testing \`AlOcaml'.
-This run has ID \`WHF3OZ3W'.
-
-SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSFSSSSSSSSSSSSSSS
-SSSSSSSSSSSSSSSSS
-
-┌──────────────────────────────────────────────────────────────────────────────┐
-│ [FAIL]        Environment Model tests          4   11.+    11.               │
-└──────────────────────────────────────────────────────────────────────────────┘
-[exception] Alocaml.Interp_common.TypeError("not a function type!")
-            Raised at Alocaml__Interp_common.type_error in file "lib/interp_common.ml", line 98, characters 19-38
-            Called from Alocaml__Interp.typeof_binop in file "lib/interp.ml", line 68, characters 28-41
-            Called from Alocaml__Interp.typecheck in file "lib/interp.ml" (inlined), line 160, characters 9-25
-            Called from Alocaml__Interp.interp_env in file "lib/interp.ml", line 276, characters 2-25
-            Called from Dune__exe__Test.test_interp_env in file "test/test.ml", line 59, characters 45-78
-            Called from Alcotest_engine__Core.Make.protect_test.(fun) in file "src/alcotest-engine/core.ml", line 180, characters 17-23
-            Called from Alcotest_engine__Monad.Identity.catch in file "src/alcotest-engine/monad.ml", line 24, characters 31-35
-
-Logs saved to \`~/Documents/code/OCaml-Interp/_build/_tests/AlOcaml/Environment Model tests.004.output'.
- ──────────────────────────────────────────────────────────────────────────────
-
-Full test results in \`~/Documents/code/OCaml-Interp/_build/_tests/AlOcaml'.
-1 failure! in 0.000s. 1 test run.`;
+export const compilerError = `File "lib/interp_common.ml", line 5, characters 15-22:
+5 | let parse (s : strings) : expr =
+                   ^^^^^^^
+Error: Unbound type constructor strings
+Hint: Did you mean string?`;
 
 /**
- * The error is: suite: 'AlOcaml', group: 'Big Step tests', id: 26,
- * name: 'comment should be ign...'.
+ * A compiler error.
  */
-export const oneError = `Testing \`AlOcaml'.
-This run has ID \`VTPVT45N'.
+export const compilerError2 = `File "lib/interp_common.ml", line 1, characters 5-9:
+1 | open Ast2
+         ^^^^
+Error: Unbound module Ast2
+Hint: Did you mean Ast?`;
 
-SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSFSSSSSSSSSSSSSSSSSSSS
-SSSSSSSSSSSSSSSSS
+/**
+ * A compiler error.
+ */
+export const compilerError3 = `File "lib/interp_common.ml", line 68, characters 25-38:
+68 | let type_error s = raise (TypeError s)
+                              ^^^^^^^^^^^^^
+Error: The constructor TypeError expects 2 argument(s),
+       but is applied here to 1 argument(s)`;
 
-┌──────────────────────────────────────────────────────────────────────────────┐
-│ [FAIL]        Big Step tests                  26   comment should be ign...  │
-└──────────────────────────────────────────────────────────────────────────────┘
-ASSERT same strings
-FAIL same strings
+/**
+ * A 'normal' failed inline test.
+ */
+export const testError = `File "lib/interp_common.ml", line 22, characters 0-29: parse true (0.000 sec)
 
-   Expected: \`"221"'
-   Received: \`"22"'
+======================================================================
+File "lib/interp_common.ml", line 22, characters 0-29: parse true is false.
 
-Raised at Alcotest_engine__Test.check in file "src/alcotest-engine/test.ml", line 196, characters 4-261
-Called from Alcotest_engine__Core.Make.protect_test.(fun) in file "src/alcotest-engine/core.ml", line 180, characters 17-23
-Called from Alcotest_engine__Monad.Identity.catch in file "src/alcotest-engine/monad.ml", line 24, characters 31-35
+FAILED 1 / 1 tests
+`;
 
-Logs saved to \`~/Documents/code/OCaml-Interp/_build/_tests/AlOcaml/Big Step tests.026.output'.
- ──────────────────────────────────────────────────────────────────────────────
+/**
+ * This test `let%test_unit` failed because of an exception.
+ */
+export const exceptionError = `File "lib/interp_common.ml", line 23, characters 0-37: <<ignore (parse "if")>> (0.000 sec)
 
-Full test results in \`~/Documents/code/OCaml-Interp/_build/_tests/AlOcaml'.
-1 failure! in 0.000s. 1 test run.`;
+======================================================================
+File "lib/interp_common.ml", line 23, characters 0-37: <<ignore (parse "if")>> threw (Failure "Parse error in column 2: syntax error.").
+  Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+  Called from Alocaml__Interp_common.(fun) in file "lib/interp_common.ml", line 23, characters 25-37
+
+FAILED 1 / 1 tests
+`;
+
+/**
+ * Failed expect test.
+ * /Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml, line 34, start: 0, end: 1
+ */
+export const expectError1 = `File "lib/interp_common.ml", line 32, characters 0-76: Expect -1.1 (0.000 sec)
+[0;31m------ [0m[0;1m/Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml[0m
+[0;32m++++++ [0m[0;1m/Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml.corrected[0m
+File "/Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml", line 34, characters 0-1:
+[0;100;30m |[0m
+[0;100;30m |[0m(*******************************************************************************
+[0;100;30m |[0m    Some tests. *)
+[0;100;30m |[0m
+[0;100;30m |[0mlet%test "parse true" = true (*Bool true = parse "true"*)
+[0;100;30m |[0mlet%test_unit _ = ignore (parse "false")
+[0;100;30m |[0mlet%test "parse false" = Bool false = parse "false"
+[0;100;30m |[0mlet%test "parse not true1" = Unop (Not, Bool true) = parse "not true"
+[0;100;30m |[0mlet%test "parse not false" = Unop (Not, Bool false) = parse "not false"
+[0;100;30m |[0mlet%test "parse 1" = Int 1 = parse "1"
+[0;100;30m |[0mlet%test "parse 1.1" = Float 1.1 = parse "1.1"
+[0;100;30m |[0mlet%test "parse -1" = Unop (Minus, Int 1) = parse "-1"
+[0;100;30m |[0mlet%test "parse -1.1" = Unop (Minus, Float 1.1) = parse "-1.1"
+[0;100;30m |[0m
+[0;100;30m |[0mlet%expect_test "Expect -1.1" =
+[0;100;30m |[0m  print_string "-1.1";
+[0;41;30m-|[0m[0m[0;2m  [%expect {|-1.[0m[0;31m12[0m[0;2m|}][0m[0m
+[0;42;30m+|[0m[0m  [%expect {|-1.[0;32m1[0m|}][0m
+[0;100;30m |[0m
+[0;100;30m |[0mlet%test "parse 11+11" = Binop (Add, Int 11, Int 11) = parse "11+11"
+[0;100;30m |[0m
+[0;100;30m |[0mlet%test "parse not true" =
+[0;100;30m |[0m  Binop (Add, Float 21., Float 21.2) = parse "21.+21.2"
+[0;100;30m |[0m
+[0;100;30m |[0mlet%test "parse 11-11" = Binop (Subtr, Int 11, Int 11) = parse "11-11"
+[0;100;30m |[0m
+[0;100;30m |[0mlet%test "parse 21.-21.2" =
+[0;100;30m |[0m  Binop (Subtr, Float 21., Float 21.2) = parse "21.-21.2"
+[0;100;30m |[0m
+[0;100;30m |[0mlet%test "parse 11*11" = Binop (Mult, Int 11, Int 11) = parse "11*11"
+[0;100;30m |[0m
+[0;100;30m |[0mlet%test "parse 21.*21.2" =
+[0;100;30m |[0m  Binop (Mult, Float 21., Float 21.2) = parse "21.*21.2"
+[0;100;30m |[0m`;
+
+/**
+ * The result of parsing `expectError1`.
+ */
+export const expectError1Object = [
+    {
+        name: "lib/interp_common.ml",
+        tests: [
+            {
+                line: 32,
+                name: "Expect -1.1",
+                startCol: 0,
+                endCol: 76,
+                actual: "-1.1",
+                expected: "-1.12",
+            },
+        ],
+    },
+];
+
+/**
+ * The same as `expectError1`, but with other formatting.
+ * /Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml, line 34, start: 0, end: 1
+ */
+export const expectError2 = `Done: 25% (14/56, 42 left) (jobs: 0)File "lib/interp_common.ml", line 32, characters 0-76: Expect -1.1 (0.000 sec)
+------ /Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml
+++++++ /Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml.corrected
+File "/Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml", line 34, characters 0-1:
+ |
+ |(*******************************************************************************
+ |    Some tests. *)
+ |
+ |let%test "parse true" = true (*Bool true = parse "true"*)
+ |let%test_unit _ = ignore (parse "false")
+ |let%test "parse false" = Bool false = parse "false"
+ |let%test "parse not true1" = Unop (Not, Bool true) = parse "not true"
+ |let%test "parse not false" = Unop (Not, Bool false) = parse "not false"
+ |let%test "parse 1" = Int 1 = parse "1"
+ |let%test "parse 1.1" = Float 1.1 = parse "1.1"
+ |let%test "parse -1" = Unop (Minus, Int 1) = parse "-1"
+ |let%test "parse -1.1" = Unop (Minus, Float 1.1) = parse "-1.1"
+ |
+ |let%expect_test "Expect -1.1" =
+ |  print_string "-1.1";
+-|  [%expect {|-1.12|}]
++|  [%expect {|-1.1|}]
+ |
+ |let%test "parse 11+11" = Binop (Add, Int 11, Int 11) = parse "11+11"
+ |
+ |let%test "parse not true" =
+ |  Binop (Add, Float 21., Float 21.2) = parse "21.+21.2"
+ |
+ |let%test "parse 11-11" = Binop (Subtr, Int 11, Int 11) = parse "11-11"
+ |
+ |let%test "parse 21.-21.2" =
+ |  Binop (Subtr, Float 21., Float 21.2) = parse "21.-21.2"
+ |
+ |let%test "parse 11*11" = Binop (Mult, Int 11, Int 11) = parse "11*11"
+ |
+ |let%test "parse 21.*21.2" =
+ |  Binop (Mult, Float 21., Float 21.2) = parse "21.*21.2"
+ |`;
+
+/**
+ * The result of parsing `expectError2`.
+ */
+export const expectError2Object = [
+    {
+        name: "lib/interp_common.ml",
+        tests: [
+            {
+                line: 32,
+                name: "Expect -1.1",
+                startCol: 0,
+                endCol: 76,
+                actual: "-1.1",
+                expected: "-1.12",
+            },
+        ],
+    },
+];
 
 /**
  * The errors are:
  * suite: 'AlOcaml', group: 'Big Step tests', id: 25, name: 'let ... if ... 2.'.
  * suite: 'AlOcaml', group: 'Big Step tests', id: 26, name: 'comment should be ign...'.
  */
-export const twoErrors = `Testing \`AlOcaml'.
-This run has ID \`1210QBDN'.
+export const twoErrors = `File "lib/interp_common.ml", line 22, characters 0-29: parse true (0.000 sec)
 
-..........................................................FF....................
-.................
+======================================================================
+File "lib/interp_common.ml", line 22, characters 0-29: parse true is false.
 
-┌──────────────────────────────────────────────────────────────────────────────┐
-│ [FAIL]        Big Step tests                  25   let ... if ... 2.         │
-└──────────────────────────────────────────────────────────────────────────────┘
-ASSERT same strings
-FAIL same strings
+FAILED 1 / 1 tests
 
-   Expected: \`"01"'
-   Received: \`"0"'
+File "lib/interp_common.ml", line 41, characters 0-30: parse 11-11 (0.000 sec)
 
-Raised at Alcotest_engine__Test.check in file "src/alcotest-engine/test.ml", line 196, characters 4-261
-Called from Alcotest_engine__Core.Make.protect_test.(fun) in file "src/alcotest-engine/core.ml", line 180, characters 17-23
-Called from Alcotest_engine__Monad.Identity.catch in file "src/alcotest-engine/monad.ml", line 24, characters 31-35
+======================================================================
+File "lib/interp_common.ml", line 41, characters 0-30: parse 11-11 is false.
 
-Logs saved to \`~/Documents/code/OCaml-Interp/_build/_tests/AlOcaml/Big Step tests.025.output'.
- ──────────────────────────────────────────────────────────────────────────────
-
-
-┌──────────────────────────────────────────────────────────────────────────────┐
-│ [FAIL]        Big Step tests                  26   comment should be ign...  │
-└──────────────────────────────────────────────────────────────────────────────┘
-ASSERT same strings
-FAIL same strings
-
-   Expected: \`"221"'
-   Received: \`"22"'
-
-Raised at Alcotest_engine__Test.check in file "src/alcotest-engine/test.ml", line 196, characters 4-261
-Called from Alcotest_engine__Core.Make.protect_test.(fun) in file "src/alcotest-engine/core.ml", line 180, characters 17-23
-Called from Alcotest_engine__Monad.Identity.catch in file "src/alcotest-engine/monad.ml", line 24, characters 31-35
-
-Logs saved to \`~/Documents/code/OCaml-Interp/_build/_tests/AlOcaml/Big Step tests.026.output'.
- ──────────────────────────────────────────────────────────────────────────────
-
-Full test results in \`~/Documents/code/OCaml-Interp/_build/_tests/AlOcaml'.
-2 failures! in 0.008s. 97 tests run.`;
+FAILED 1 / 1 tests
+`;
 
 /**
  * The result object of parsing `twoErrors`.
  */
-export const twoErrorsObject = [
-    {
-        name: "Big Step tests",
-        tests: [
-            {
-                actual: '"0"',
-                expected: '"01"',
-                id: 25,
-                name: "let ... if ... 2",
-            },
-            {
-                actual: '"22"',
-                expected: '"221"',
-                id: 26,
-                name: "comment should be ign",
-            },
-        ],
-    },
-];
+export const twoErrorsObject = [];
 
 /**
  * Three failed tests, two with a 'normal' failure and one exception.
  * To test whether the regexps correctly parse mixed error messages.
  */
-export const threeErrors1 = `Testing \`AlOcaml'.
-This run has ID \`1210QBDN'.
+export const threeErrors1 = `File "lib/interp_common.ml", line 22, characters 0-29: parse true (0.000 sec)
 
-..........................................................FF....................
-.................
+======================================================================
+File "lib/interp_common.ml", line 22, characters 0-29: parse true is false.
 
-┌──────────────────────────────────────────────────────────────────────────────┐
-│ [FAIL]        Big Step tests                  25   let ... if ... 2.         │
-└──────────────────────────────────────────────────────────────────────────────┘
-ASSERT same strings
-FAIL same strings
+FAILED 1 / 1 tests
 
-   Expected: \`"01"'
-   Received: \`"0"'
+File "lib/interp_common.ml", line 23, characters 0-37: <<ignore (parse "if")>> (0.000 sec)
 
-Raised at Alcotest_engine__Test.check in file "src/alcotest-engine/test.ml", line 196, characters 4-261
-Called from Alcotest_engine__Core.Make.protect_test.(fun) in file "src/alcotest-engine/core.ml", line 180, characters 17-23
-Called from Alcotest_engine__Monad.Identity.catch in file "src/alcotest-engine/monad.ml", line 24, characters 31-35
+======================================================================
+File "lib/interp_common.ml", line 23, characters 0-37: <<ignore (parse "if")>> threw (Failure "Parse error in column 2: syntax error.").
+  Raised at Stdlib.failwith in file "stdlib.ml", line 29, characters 17-33
+  Called from Alocaml__Interp_common.(fun) in file "lib/interp_common.ml", line 23, characters 25-37
 
-Logs saved to \`~/Documents/code/OCaml-Interp/_build/_tests/AlOcaml/Big Step tests.025.output'.
- ──────────────────────────────────────────────────────────────────────────────
+FAILED 1 / 1 tests
 
-┌──────────────────────────────────────────────────────────────────────────────┐
-│ [FAIL]        Environment Model tests          4   11.+    11.               │
-└──────────────────────────────────────────────────────────────────────────────┘
-[exception] Alocaml.Interp_common.TypeError("not a function type!")
-            Raised at Alocaml__Interp_common.type_error in file "lib/interp_common.ml", line 98, characters 19-38
-            Called from Alocaml__Interp.typeof_binop in file "lib/interp.ml", line 68, characters 28-41
-            Called from Alocaml__Interp.typecheck in file "lib/interp.ml" (inlined), line 160, characters 9-25
-            Called from Alocaml__Interp.interp_env in file "lib/interp.ml", line 276, characters 2-25
-            Called from Dune__exe__Test.test_interp_env in file "test/test.ml", line 59, characters 45-78
-            Called from Alcotest_engine__Core.Make.protect_test.(fun) in file "src/alcotest-engine/core.ml", line 180, characters 17-23
-            Called from Alcotest_engine__Monad.Identity.catch in file "src/alcotest-engine/monad.ml", line 24, characters 31-35
+File "lib/interp_common.ml", line 41, characters 0-30: parse 11-11 (0.000 sec)
 
-Logs saved to \`~/Documents/code/OCaml-Interp/_build/_tests/AlOcaml/Environment Model tests.004.output'.
- ──────────────────────────────────────────────────────────────────────────────
+======================================================================
+File "lib/interp_common.ml", line 41, characters 0-30: parse 11-11 is false.
 
-
-┌──────────────────────────────────────────────────────────────────────────────┐
-│ [FAIL]        Big Step tests                  26   comment should be ign...  │
-└──────────────────────────────────────────────────────────────────────────────┘
-ASSERT same strings
-FAIL same strings
-
-   Expected: \`"221"'
-   Received: \`"22"'
-
-Raised at Alcotest_engine__Test.check in file "src/alcotest-engine/test.ml", line 196, characters 4-261
-Called from Alcotest_engine__Core.Make.protect_test.(fun) in file "src/alcotest-engine/core.ml", line 180, characters 17-23
-Called from Alcotest_engine__Monad.Identity.catch in file "src/alcotest-engine/monad.ml", line 24, characters 31-35
-
-Logs saved to \`~/Documents/code/OCaml-Interp/_build/_tests/AlOcaml/Big Step tests.026.output'.
- ──────────────────────────────────────────────────────────────────────────────
-
-Full test results in \`~/Documents/code/OCaml-Interp/_build/_tests/AlOcaml'.
-2 failures! in 0.008s. 97 tests run.`;
+FAILED 1 / 1 tests`;
 
 /**
  * Three failed tests, two with a 'normal' failure and one exception.
  * To test whether the regexps correctly parse mixed error messages.
  */
-export const threeErrors2 = `Testing \`AlOcaml'.
-This run has ID \`1210QBDN'.
-
-..........................................................FF....................
-.................
-
-┌──────────────────────────────────────────────────────────────────────────────┐
-│ [FAIL]        Big Step tests                  25   let ... if ... 2.         │
-└──────────────────────────────────────────────────────────────────────────────┘
-ASSERT same strings
-FAIL same strings
-
-   Expected: \`"01"'
-   Received: \`"0"'
-
-Raised at Alcotest_engine__Test.check in file "src/alcotest-engine/test.ml", line 196, characters 4-261
-Called from Alcotest_engine__Core.Make.protect_test.(fun) in file "src/alcotest-engine/core.ml", line 180, characters 17-23
-Called from Alcotest_engine__Monad.Identity.catch in file "src/alcotest-engine/monad.ml", line 24, characters 31-35
-
-Logs saved to \`~/Documents/code/OCaml-Interp/_build/_tests/AlOcaml/Big Step tests.025.output'.
- ──────────────────────────────────────────────────────────────────────────────
-
-
-┌──────────────────────────────────────────────────────────────────────────────┐
-│ [FAIL]        Big Step tests                  26   comment should be ign...  │
-└──────────────────────────────────────────────────────────────────────────────┘
-ASSERT same strings
-FAIL same strings
-
-   Expected: \`"221"'
-   Received: \`"22"'
-
-Raised at Alcotest_engine__Test.check in file "src/alcotest-engine/test.ml", line 196, characters 4-261
-Called from Alcotest_engine__Core.Make.protect_test.(fun) in file "src/alcotest-engine/core.ml", line 180, characters 17-23
-Called from Alcotest_engine__Monad.Identity.catch in file "src/alcotest-engine/monad.ml", line 24, characters 31-35
-
-Logs saved to \`~/Documents/code/OCaml-Interp/_build/_tests/AlOcaml/Big Step tests.026.output'.
- ──────────────────────────────────────────────────────────────────────────────
-
-┌──────────────────────────────────────────────────────────────────────────────┐
-│ [FAIL]        Environment Model tests          4   11.+    11.               │
-└──────────────────────────────────────────────────────────────────────────────┘
-[exception] Alocaml.Interp_common.TypeError("not a function type!")
-            Raised at Alocaml__Interp_common.type_error in file "lib/interp_common.ml", line 98, characters 19-38
-            Called from Alocaml__Interp.typeof_binop in file "lib/interp.ml", line 68, characters 28-41
-            Called from Alocaml__Interp.typecheck in file "lib/interp.ml" (inlined), line 160, characters 9-25
-            Called from Alocaml__Interp.interp_env in file "lib/interp.ml", line 276, characters 2-25
-            Called from Dune__exe__Test.test_interp_env in file "test/test.ml", line 59, characters 45-78
-            Called from Alcotest_engine__Core.Make.protect_test.(fun) in file "src/alcotest-engine/core.ml", line 180, characters 17-23
-            Called from Alcotest_engine__Monad.Identity.catch in file "src/alcotest-engine/monad.ml", line 24, characters 31-35
-
-Logs saved to \`~/Documents/code/OCaml-Interp/_build/_tests/AlOcaml/Environment Model tests.004.output'.
- ──────────────────────────────────────────────────────────────────────────────
-
-Full test results in \`~/Documents/code/OCaml-Interp/_build/_tests/AlOcaml'.
-1 failure! in 0.000s. 1 test run.`;
+export const threeErrors2 = ``;
 
 /**
  * The result object of parsing `threeErrors1` and `threeErrors2`.
  */
-export const threeErrorsObject = [
-    {
-        name: "Big Step tests",
-        tests: [
-            {
-                actual: '"0"',
-                expected: '"01"',
-                id: 25,
-                name: "let ... if ... 2",
-            },
-            {
-                actual: '"22"',
-                expected: '"221"',
-                id: 26,
-                name: "comment should be ign",
-            },
-        ],
-    },
-    {
-        name: "Environment Model tests",
-        tests: [
-            {
-                actual: 'Alocaml.Interp_common.TypeError("not a function type!")\n            Raised at Alocaml__Interp_common.type_error in file "lib/interp_common.ml", line 98, characters 19-38\n            Called from Alocaml__Interp.typeof_binop in file "lib/interp.ml", line 68, characters 28-41\n            Called from Alocaml__Interp.typecheck in file "lib/interp.ml" (inlined), line 160, characters 9-25\n            Called from Alocaml__Interp.interp_env in file "lib/interp.ml", line 276, characters 2-25\n            Called from Dune__exe__Test.test_interp_env in file "test/test.ml", line 59, characters 45-78\n            Called from Alcotest_engine__Core.Make.protect_test.(fun) in file "src/alcotest-engine/core.ml", line 180, characters 17-23\n            Called from Alcotest_engine__Monad.Identity.catch in file "src/alcotest-engine/monad.ml", line 24, characters 31-35',
-                id: 4,
-                name: "11.+    11",
-            },
-        ],
-    },
-];
-
-/**
- * The error is: suite: 'Inline Tests', group: 'lib/interp_common.ml',
- * id: 11, name: 'parse 1.'
- */
-export const oneErrorInline = `Testing \`_build/default/lib/'.
-This run has ID \`1VEG7NUJ'.
-
-SSSSSSSSSSSFSSSS
-
-┌──────────────────────────────────────────────────────────────────────────────┐
-│ [FAIL]        lib/interp_common.ml         11   parse 1.                     │
-└──────────────────────────────────────────────────────────────────────────────┘
-ASSERT parse 1
-FAIL parse 1
-
-   Expected: \`false'
-   Received: \`true'
-
-Raised at Alcotest_engine__Test.check in file "src/alcotest-engine/test.ml", line 196, characters 4-261
-Called from Alcotest_engine__Core.Make.protect_test.(fun) in file "src/alcotest-engine/core.ml", line 180, characters 17-23
-Called from Alcotest_engine__Monad.Identity.catch in file "src/alcotest-engine/monad.ml", line 24, characters 31-35
-
-Logs saved to \`~/Documents/code/OCaml-Interp/_build/_tests/_build-default-lib-/lib-interp_common.ml.011.output'.
- ──────────────────────────────────────────────────────────────────────────────
-
-Full test results in \`~/Documents/code/OCaml-Interp/_build/_tests/_build-default-lib-'.
-1 failure! in 0.000s. 1 test run.`;
-
-/**
- * The result object of parsing `oneErrorInline`.
- */
-export const oneErrorInlineObject = [
-    {
-        name: "lib/interp_common.ml",
-        tests: [{ actual: "true", expected: "false", id: 11, name: "parse 1" }],
-    },
-];
+export const threeErrorsObject = [];

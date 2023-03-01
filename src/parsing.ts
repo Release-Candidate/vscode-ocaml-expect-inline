@@ -19,6 +19,12 @@ import * as vscode from "vscode";
 const regexpRegex = /[\\^$.*+?()[\]{}|]/gu;
 
 /**
+ * Regexp to match ANSI color control sequences.
+ */
+// eslint-disable-next-line no-control-regex
+const ansiRegexp = /\x1b\[[0-9;]*m/gu;
+
+/**
  * Regexp to parse version numbers.
  * Ignores leading and trailing whitespace including newlines.
  * The version number is captured in the first group with name `version`.
@@ -49,38 +55,47 @@ const duneTestRegex2 =
 const inlineRunnerLibrary = /inline_test_runner_(?<library>\S+)\./u;
 
 /**
- * Regexp to parse Alcotest test lists.
- * The test group's name is saved in the first match group, `group`, the ID is captured
- * in the second group with name `id` and the test's name is the third group
- * called `name`.
- * Ignores added (or not added) points at the end of the name.
+ * Regexp to parse expect and inline test lists.
+ * The lists are printed on `stdout`.
+ * Groups: filename: `file`, line: `line`, startCol: `start`, endCol: `end` and
+ * name: `name` (can be the empty string)
+ *
  */
-const testListRegex = /^(?<group>\S+.*?)\s+(?<id>\d+)\s+(?<name>.*?)\.+$/gmu;
+const testListRegex =
+    /^\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):?\s+(?<name>.*?)\s*\([\p{N}.]+\s+sec\)$/gmu;
 
 /**
- * Regexp to parse Alcotest test results for errors.
- * The test group's name is saved in the first match group, `group`, the ID is captured
- * in the second group with name `id` and the test's name is the third group
- * called `name`.
- * The expected value is returned in the fourth match group, called `exp`, the
- * actual value is returned in the fifth group, `rec`.
+ * Regex to match a compile error.
+ */
+const compileError =
+    /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):\s*?(?<name>.*?)\s*Error:/gmsu;
+
+/**
+ * Regexp to parse test results for errors.
+ * The failed tests are printed to `stderr`
  */
 const testErrorRegex =
-    /^│\s+\[FAIL\]\s+(?<group>\S+[^\n]*?)\s+(?<id>\d+)\s+(?<name>[^\n]+?)\.+\s+│\s+[└─┘]+\s+A.*?^\s+Expected:\s+`(?<exp>.*?)'\s*\n+\s+\s+Received:\s+`(?<rec>.*?)'\s*\n\n/gmsu;
+    /[=]==$\n^File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):\s+?(?<name>[^\n]*?)\s+is.*?.$\n^FAILED/gmsu;
 
 /**
- * Regexp to parse Alcotest test results for errors.
- * The test group's name is saved in the first match group, `group`, the ID is captured
- * in the second group with name `id` and the test's name is the third group
- * called `name`.
- * The exception call stack is returned in the fourth match group, called
- * `excp`.
+ * Regexp to parse test results for exceptions.
+ * The failed tests are printed to `stderr`
  */
-const testExceptionRegex =
-    /^│\s+\[FAIL\]\s+(?<group>\S+[^\n]*?)\s+(?<id>\d+)\s+(?<name>[^\n]+?)\.+\s+│\s+[└─┘]+\s+^(?=\[exception\]\s+(?<excp>.*?)\n\n)/gmsu;
+const testExceptionRegex = /HUGO/gmsu;
 
+/**
+ * Regexp to parse test results of expect tests.
+ * The failed tests are printed to `stderr`
+ * The line number is not the same as the line number of the test that failed.
+ */
+const testExpectRegex =
+    /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):\s*?(?<name>.*?)\s*(?:\([\p{N}.]+\s+sec\))?$.*?-\|.*?\[%expect\s+\{\|(?<exp>.*?)\|\}\].*?\+\|.*?\[%expect\s+\{\|(?<rec>.*?)\|\}\]/gmsu;
+
+/**
+ * Error message of the test runner if no matching tests to run have been found.
+ */
 const noTestsFoundRegex =
-    /^\s*?Invalid\s+request\s+\(no\s+tests\s+to\s+run,\s+filter\s+skipped\s+everything\)!$/msu;
+    /^\s*ppx_inline_test error:\s+the\s+following\s+-only-test\s+flags\s+matched\s+nothing:/msu;
 
 /**
  * Escape special regexp characters in `s`.
@@ -89,6 +104,24 @@ const noTestsFoundRegex =
  */
 export function escapeRegex(s: string) {
     return s.replace(regexpRegex, "\\$&");
+}
+
+/**
+ * Return `true` if `s` contains a compile error, `false` else.
+ * @param s The text to check.
+ * @returns `true` if `s` contains a compile error, `false` else.
+ */
+export function isCompileError(s: string) {
+    return Boolean(s.match(compileError));
+}
+
+/**
+ * Remove ANSI color sequences from the string `s`.
+ * @param s The string to sanitize.
+ * @returns The string `s` with removed ANSI color sequences.
+ */
+export function removeColorCodes(s: string) {
+    return s.replace(ansiRegexp, "");
 }
 
 /**
@@ -245,21 +278,33 @@ export function parseTestList(s: string) {
  * Parse the given list of test results and return the tests with
  * errors.
  *
- * Return a list of objects `{ name: group, tests: [{ id, name, expected, actual }] }`,
+ * Return a list of objects
+ * `{ name: group, tests: [{ id, name, line, startCol, endCol, expected, actual }] }`,
  * where `group` is the name of the test group the test is in, `id` is the id of
  * the test and `name` is it's name, `actual` is the actual test result and
  * `expected` is the expected test result..
  * @param s The string to parse.
- * @returns A list of objects `{ name: group, tests: [{ id, name, expected, actual }] }`.
+ * @returns A list of objects
+ * `{ name: group, tests: [{ id, name, line, startCol, endCol, expected, actual }] }`.
  */
 export function parseTestErrors(s: string) {
-    return groupTestHelper(
-        parseTestHelper<TestTypeIn>(
-            testErrorRegex,
-            s,
-            errorMatchToObject
-        ).concat(parseTestHelper(testExceptionRegex, s, exceptionMatchToObject))
+    const sanitized = removeColorCodes(s);
+    const errors = parseTestHelper<TestTypeIn>(
+        testErrorRegex,
+        sanitized,
+        errorMatchToObject
     );
+    const exceptionErrors = parseTestHelper<TestTypeIn>(
+        testExceptionRegex,
+        sanitized,
+        exceptionMatchToObject
+    );
+    const expectErrors = parseTestHelper<TestTypeIn>(
+        testExpectRegex,
+        sanitized,
+        errorMatchToObject
+    );
+    return groupTestHelper(errors.concat(exceptionErrors).concat(expectErrors));
 }
 
 /**
@@ -307,15 +352,13 @@ function parseTestHelper<T extends { group: string }>(
  */
 function errorMatchToObject(match: RegExpMatchArray) {
     return {
-        group: match.groups?.group ? match.groups.group : "",
-        name: match.groups?.name ? match.groups.name : "",
-        line: match.groups?.line ? parseInt(match.groups.line, 10) : 0,
-        startCol: match.groups?.colStart
-            ? parseInt(match.groups.colStart, 10)
-            : 0,
-        endCol: match.groups?.colEnd ? parseInt(match.groups.colEnd, 10) : 0,
-        expected: match.groups?.exp ? match.groups.exp : "",
-        actual: match.groups?.rec ? match.groups.rec : "",
+        group: getFileName(match),
+        name: getName(match),
+        line: getLine(match),
+        startCol: getStartCol(match),
+        endCol: getEndCol(match),
+        actual: getActual(match),
+        expected: getExpected(match),
     };
 }
 
@@ -327,14 +370,12 @@ function errorMatchToObject(match: RegExpMatchArray) {
  */
 function exceptionMatchToObject(match: RegExpMatchArray) {
     return {
-        group: match.groups?.group ? match.groups.group : "",
-        name: match.groups?.name ? match.groups.name : "",
-        line: match.groups?.line ? parseInt(match.groups.line, 10) : 0,
-        startCol: match.groups?.colStart
-            ? parseInt(match.groups.colStart, 10)
-            : 0,
-        endCol: match.groups?.colEnd ? parseInt(match.groups.colEnd, 10) : 0,
-        actual: match.groups?.rec ? match.groups.rec : "",
+        group: getFileName(match),
+        name: getName(match),
+        line: getLine(match),
+        startCol: getStartCol(match),
+        endCol: getEndCol(match),
+        actual: getActual(match),
     };
 }
 
@@ -346,14 +387,41 @@ function exceptionMatchToObject(match: RegExpMatchArray) {
  */
 function listMatchToObject(match: RegExpMatchArray) {
     return {
-        group: match.groups?.group ? match.groups.group : "",
-        name: match.groups?.name ? match.groups.name : "",
-        line: match.groups?.line ? parseInt(match.groups.line, 10) : 0,
-        startCol: match.groups?.colStart
-            ? parseInt(match.groups.colStart, 10)
-            : 0,
-        endCol: match.groups?.colEnd ? parseInt(match.groups.colEnd, 10) : 0,
+        group: getFileName(match),
+        name: getName(match),
+        line: getLine(match),
+        startCol: getStartCol(match),
+        endCol: getEndCol(match),
     };
+}
+
+function getExpected(match: RegExpMatchArray) {
+    return match.groups?.exp ? match.groups.exp : "";
+}
+
+function getActual(match: RegExpMatchArray) {
+    return match.groups?.rec ? match.groups.rec : "";
+}
+
+function getEndCol(match: RegExpMatchArray) {
+    return match.groups?.end ? parseInt(match.groups.end, 10) : 0;
+}
+
+function getStartCol(match: RegExpMatchArray) {
+    return match.groups?.start ? parseInt(match.groups.start, 10) : 0;
+}
+
+function getLine(match: RegExpMatchArray) {
+    return match.groups?.line ? parseInt(match.groups.line, 10) : 0;
+}
+
+function getFileName(match: RegExpMatchArray) {
+    return match.groups?.file ? match.groups.file : "";
+}
+
+function getName(match: RegExpMatchArray) {
+    const name = match.groups?.name ? match.groups.name.trim() : "";
+    return name.length ? name : `${getFileName(match)} Line ${getLine(match)}`;
 }
 
 /**

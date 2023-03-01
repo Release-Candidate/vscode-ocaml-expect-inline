@@ -47,6 +47,7 @@ export async function activate(context: vscode.ExtensionContext) {
  * @param context The extension's context.
  * @param outChannel The channel to log to.
  */
+// eslint-disable-next-line max-statements
 async function setupExtension(
     context: vscode.ExtensionContext,
     outChannel: vscode.OutputChannel
@@ -68,6 +69,14 @@ async function setupExtension(
             rt.runHandler({ config, controller, outChannel, testData }, r, tok)
     );
     context.subscriptions.push(runProfile);
+
+    // eslint-disable-next-line no-unused-vars
+    controller.refreshHandler = async (_) => {
+        t.addTests(
+            { config, controller, outChannel, testData },
+            h.workspaceFolders()
+        );
+    };
 
     const disposable = vscode.workspace.onDidChangeWorkspaceFolders(
         async (e) => {
