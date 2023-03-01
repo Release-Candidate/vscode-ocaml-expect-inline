@@ -90,7 +90,7 @@ const testExceptionRegex =
  * The line number is not the same as the line number of the test that failed.
  */
 const testExpectRegex =
-    /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):\s*?(?<name>.*?)\s*(?:\([\p{N}.]+\s+sec\))?$.*?-\|.*?\[%expect\s+\{\|(?<exp>.*?)\|\}\].*?\+\|.*?\[%expect\s+\{\|(?<rec>.*?)\|\}\]/gmsu;
+    /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):?\s*?(?<name>.*?)\s*(?:\([\p{N}.]+\s+sec\))?$.*?-\|.*?\[%expect\s+\{\|(?<exp>.*?)\|\}\].*?\+\|.*?\[%expect\s+\{\|(?<rec>.*?)\|\}\]/gmsu;
 
 /**
  * Error message of the test runner if no matching tests to run have been found.
@@ -376,7 +376,6 @@ function exceptionMatchToObject(match: RegExpMatchArray) {
         line: getLine(match),
         startCol: getStartCol(match),
         endCol: getEndCol(match),
-        actual: getActual(match),
     };
 }
 

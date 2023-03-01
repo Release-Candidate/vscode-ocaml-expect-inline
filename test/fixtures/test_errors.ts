@@ -200,44 +200,45 @@ export const expectError1Object = [
  * The same as `expectError1`, but with other formatting.
  * /Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml, line 34, start: 0, end: 1
  */
-export const expectError2 = `Done: 25% (14/56, 42 left) (jobs: 0)File "lib/interp_common.ml", line 32, characters 0-76: Expect -1.1 (0.000 sec)
------- /Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml
-++++++ /Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml.corrected
-File "/Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml", line 34, characters 0-1:
- |
- |(*******************************************************************************
- |    Some tests. *)
- |
- |let%test "parse true" = true (*Bool true = parse "true"*)
- |let%test_unit _ = ignore (parse "false")
- |let%test "parse false" = Bool false = parse "false"
- |let%test "parse not true1" = Unop (Not, Bool true) = parse "not true"
- |let%test "parse not false" = Unop (Not, Bool false) = parse "not false"
- |let%test "parse 1" = Int 1 = parse "1"
- |let%test "parse 1.1" = Float 1.1 = parse "1.1"
- |let%test "parse -1" = Unop (Minus, Int 1) = parse "-1"
- |let%test "parse -1.1" = Unop (Minus, Float 1.1) = parse "-1.1"
- |
- |let%expect_test "Expect -1.1" =
- |  print_string "-1.1";
--|  [%expect {|-1.12|}]
-+|  [%expect {|-1.1|}]
- |
- |let%test "parse 11+11" = Binop (Add, Int 11, Int 11) = parse "11+11"
- |
- |let%test "parse not true" =
- |  Binop (Add, Float 21., Float 21.2) = parse "21.+21.2"
- |
- |let%test "parse 11-11" = Binop (Subtr, Int 11, Int 11) = parse "11-11"
- |
- |let%test "parse 21.-21.2" =
- |  Binop (Subtr, Float 21., Float 21.2) = parse "21.-21.2"
- |
- |let%test "parse 11*11" = Binop (Mult, Int 11, Int 11) = parse "11*11"
- |
- |let%test "parse 21.*21.2" =
- |  Binop (Mult, Float 21., Float 21.2) = parse "21.*21.2"
- |`;
+export const expectError2 = `File "lib/interp_common.ml", line 57, characters 0-95 (0.000 sec)
+[0;31m------ [0m[0;1m/Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml[0m
+[0;32m++++++ [0m[0;1m/Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml.corrected[0m
+File "/Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml", line 59, characters 0-1:
+[0;100;30m |[0mlet%test "parse 11-11" = true (*Binop (Subtr, Int 11, Int 11) = parse "11-11"*)
+[0;100;30m |[0m
+[0;100;30m |[0mlet%test_unit "parse 21.-21.2" =
+[0;100;30m |[0m  (*Binop (Subtr, Float 21., Float 21.2) = parse "21.-21.2"*)
+[0;100;30m |[0m   [%test_result: int] 5 ~expect:4
+[0;100;30m |[0m
+[0;100;30m |[0mlet%test "parse 11*11" = true (*Binop (Mult, Int 11, Int 11) = parse "11*11"*)
+[0;100;30m |[0m
+[0;100;30m |[0mlet%test "parse 21.*21.2" = true
+[0;100;30m |[0m (* Binop (Mult, Float 21., Float 21.2) = parse "21.*21.2"*)
+[0;100;30m |[0m
+[0;100;30m |[0mlet%test "parse 11/-11" = true
+[0;100;30m |[0m (* Binop (Div, Int 11, Unop (Minus, Int 11)) = parse "11/-11"*)
+[0;100;30m |[0m
+[0;100;30m |[0mlet%expect_test _ =
+[0;100;30m |[0m  Stdio.Out_channel.output_string Stdio.stdout "-1.1";
+[0;41;30m-|[0m[0m[0;2m  [%expect {|-1.[0m[0;31m5[0m[0;2m|}][0m[0m
+[0;42;30m+|[0m[0m  [%expect {|-1.[0;32m1[0m|}][0m
+[0;100;30m |[0m
+[0;100;30m |[0mlet%test "parse 21./-21.2" = failwith "NO"
+[0;100;30m |[0m  (*Binop (Div, Float 21., Unop (Minus, Float 21.2)) = parse "21./-21.2"*)
+[0;100;30m |[0m
+[0;100;30m |[0m(* =============================================================================
+[0;100;30m |[0m   Error messages
+[0;100;30m |[0m*)
+[0;100;30m |[0m
+[0;100;30m |[0mexception TypeError of string
+[0;100;30m |[0mexception RuntimeError of string
+[0;100;30m |[0m
+[0;100;30m |[0mlet type_error s = raise (TypeError s)
+[0;100;30m |[0mlet runtime_error s = raise (RuntimeError s)
+[0;100;30m |[0m
+[0;100;30m |[0m(** [unbound_var_err x] returns the error message for an unbound variable x. *)
+[0;100;30m |[0mlet unbound_var_err x = "Unbound variable " ^ x
+`;
 
 /**
  * The result of parsing `expectError2`.
@@ -247,12 +248,12 @@ export const expectError2Object = [
         name: "lib/interp_common.ml",
         tests: [
             {
-                line: 32,
-                name: "Expect -1.1",
+                line: 57,
+                name: "lib/interp_common.ml Line 57",
                 startCol: 0,
-                endCol: 76,
+                endCol: 95,
                 actual: "-1.1",
-                expected: "-1.12",
+                expected: "-1.5",
             },
         ],
     },

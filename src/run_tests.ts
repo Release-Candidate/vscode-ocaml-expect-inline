@@ -99,7 +99,11 @@ async function runSingleTest(env: h.Env, test: vscode.TestItem) {
         await parseTestResult(env, { out, startTime, test, root, file });
         // eslint-disable-next-line require-atomic-updates
         test.busy = false;
-        env.run?.appendOutput(`${out.stdout?.replace(/\n/gu, "\r\n")}`);
+        env.run?.appendOutput(
+            `${out.stdout
+                ?.concat(out.stderr ? out.stderr : "")
+                ?.replace(/\n/gu, "\r\n")}`
+        );
     }
 }
 
@@ -166,7 +170,7 @@ async function setTestError(
         data.out.stderr ? data.out.stderr : ""
     );
     let message = await constructMessage({
-        txt: output ? output : "",
+        txt: output ? p.removeColorCodes(output) : "",
         test: data.test,
         testData: env.testData,
         errElem,
