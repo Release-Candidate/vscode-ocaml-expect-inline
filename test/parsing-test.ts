@@ -436,6 +436,27 @@ mocha.describe("Parsing Functions", () => {
                 "expectError2 -> expectError2Object"
             );
         });
+        mocha.it("Failed test 1 -> one test", () => {
+            chai.assert.deepEqual(
+                parse.parseTestErrors(testErrors.testError),
+                testErrors.testErrorObject,
+                "exceptionError -> testErrorObject"
+            );
+        });
+        mocha.it("Exception 1 -> one test", () => {
+            chai.assert.deepEqual(
+                parse.parseTestErrors(testErrors.exceptionError),
+                testErrors.exceptionErrorObject,
+                "exceptionError -> exceptionErrorObject"
+            );
+        });
+        mocha.it("Exception 2 -> one test", () => {
+            chai.assert.deepEqual(
+                parse.parseTestErrors(testErrors.exceptionError2),
+                testErrors.exceptionError2Object,
+                "exceptionError2 -> exceptionError2Object"
+            );
+        });
         mocha.it("No errors -> no errors", () => {
             chai.assert.deepEqual(
                 parse.parseTestErrors(testLists.normalList),

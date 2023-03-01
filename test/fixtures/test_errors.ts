@@ -29,11 +29,12 @@ Hint: Did you mean string?`;
 /**
  * A compiler error.
  */
-export const compilerError2 = `File "lib/interp_common.ml", line 1, characters 5-9:
-1 | open Ast2
-         ^^^^
-Error: Unbound module Ast2
-Hint: Did you mean Ast?`;
+export const compilerError2 = `File "lib/interp_common.ml", line 59, characters 2-14:
+59 |   print_string "-1.1";
+       ^^^^^^^^^^^^
+Error (alert deprecated): Base.print_string
+[2016-09] this element comes from the stdlib distributed with OCaml.
+Use [Stdio.Out_channel.output_string Stdio.stdout] instead.`;
 
 /**
  * A compiler error.
@@ -56,6 +57,23 @@ FAILED 1 / 1 tests
 `;
 
 /**
+ * The result object of `testError`.
+ */
+export const testErrorObject = [
+    {
+        name: "lib/interp_common.ml",
+        tests: [
+            {
+                endCol: 29,
+                line: 22,
+                name: "parse true",
+                startCol: 0,
+            },
+        ],
+    },
+];
+
+/**
  * This test `let%test_unit` failed because of an exception.
  */
 export const exceptionError = `File "lib/interp_common.ml", line 23, characters 0-37: <<ignore (parse "if")>> (0.000 sec)
@@ -67,6 +85,54 @@ File "lib/interp_common.ml", line 23, characters 0-37: <<ignore (parse "if")>> t
 
 FAILED 1 / 1 tests
 `;
+
+/**
+ * The result object of `exceptionError`.
+ */
+export const exceptionErrorObject = [
+    {
+        name: "lib/interp_common.ml",
+        tests: [
+            {
+                endCol: 37,
+                line: 23,
+                name: '<<ignore (parse "if")>>',
+                startCol: 0,
+            },
+        ],
+    },
+];
+
+/**
+ * This test `let%test_unit` failed because of an exception.
+ */
+export const exceptionError2 = `File "lib/interp_common.ml", line 45, characters 0-129: parse 21.-21.2 (0.000 sec)
+
+======================================================================
+File "lib/interp_common.ml", line 45, characters 0-129: parse 21.-21.2 threw
+(runtime-lib/runtime.ml.E "got unexpected result"
+  ((expected 4) (got 5) (Loc lib/interp_common.ml:47:18))).
+  Raised at Ppx_assert_lib__Runtime.test_result in file "runtime-lib/runtime.ml", line 106, characters 27-83
+  Called from Alocaml__Interp_common.(fun) in file "lib/interp_common.ml", line 47, characters 18-21
+
+FAILED 1 / 1 tests`;
+
+/**
+ * The result object of `exceptionError2`.
+ */
+export const exceptionError2Object = [
+    {
+        name: "lib/interp_common.ml",
+        tests: [
+            {
+                endCol: 129,
+                line: 45,
+                name: "parse 21.-21.2",
+                startCol: 0,
+            },
+        ],
+    },
+];
 
 /**
  * Failed expect test.

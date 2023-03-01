@@ -68,7 +68,7 @@ const testListRegex =
  * Regex to match a compile error.
  */
 const compileError =
-    /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):\s*?(?<name>.*?)\s*Error:/gmsu;
+    /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):\s*?(?<name>.*?)\s*Error\s*.*?:/gmsu;
 
 /**
  * Regexp to parse test results for errors.
@@ -81,7 +81,8 @@ const testErrorRegex =
  * Regexp to parse test results for exceptions.
  * The failed tests are printed to `stderr`
  */
-const testExceptionRegex = /HUGO/gmsu;
+const testExceptionRegex =
+    /[=]==$\n^File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):\s+?(?<name>[^\n]*?)\s+threw.*?.$\n^FAILED/gmsu;
 
 /**
  * Regexp to parse test results of expect tests.
