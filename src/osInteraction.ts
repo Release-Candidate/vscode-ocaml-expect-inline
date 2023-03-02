@@ -19,6 +19,7 @@ import internal = require("stream");
 import * as parse from "./parsing";
 import * as vscode from "vscode";
 import path = require("path");
+import { Url } from "url";
 
 /**
  * Object holding the output of a process.
@@ -43,13 +44,15 @@ export type Output = {
 };
 
 /**
- * Return the relative path to `root` of `absPath`.
- * @param root The root part of the directory to remove.
+ * Return the root and relative path to a workspace root of `uri`.
  * @param absPath The absolute path to make relative to `root`
- * @returns The relative path to `root` of `absPath`.
+ * @returns The relative path of `uri` in `path`, the root in `root`.
  */
-export function toRelativePath(root: vscode.Uri, absPath: string) {
-    return absPath.replace(root.path, "").replace(/^\//u, "");
+export function toRelativePath(uri: vscode.Uri) {
+    return {
+        root: vscode.workspace.getWorkspaceFolder(uri),
+        path: vscode.workspace.asRelativePath(uri, false),
+    };
 }
 
 /**

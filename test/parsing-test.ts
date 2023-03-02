@@ -17,7 +17,6 @@ import * as parse from "../src/parsing";
 import * as testErrors from "./fixtures/test_errors";
 import * as testLists from "./fixtures/test_lists";
 import * as testSources from "./fixtures/test_sources";
-import * as vscode from "vscode";
 
 /* eslint-disable max-lines-per-function */
 
@@ -25,6 +24,7 @@ import * as vscode from "vscode";
  * *****************************************************************************
  * Tests
  */
+// eslint-disable-next-line max-statements
 mocha.describe("Parsing Functions", () => {
     //==========================================================================
     mocha.describe("trim", () => {
@@ -212,8 +212,26 @@ mocha.describe("Parsing Functions", () => {
         mocha.it("parse testSource1 -> list of tests", () => {
             chai.assert.deepEqual(
                 parse.parseTextForTests(testSources.testSource1),
-                [],
+                testSources.testSource1Ranges,
                 "testSource1 -> testSource1Range"
+            );
+        });
+    });
+    //==========================================================================
+    mocha.describe("isOCamlFile", () => {
+        mocha.it("Empty string -> false", () => {
+            chai.assert.isFalse(parse.isOCamlFile(""), "Empty string -> false");
+        });
+        mocha.it("Other file suffix -> false", () => {
+            chai.assert.isFalse(
+                parse.isOCamlFile("fda/dsad/fghsjdi.mli"),
+                "fda/dsad/fghsjdi.mli -> false"
+            );
+        });
+        mocha.it("OCaml file suffix -> true", () => {
+            chai.assert.isTrue(
+                parse.isOCamlFile("fd a/ds ad/fg hs jdi.ml"),
+                "fd a/ds ad/fg hs jdi.ml -> true"
             );
         });
     });

@@ -14,6 +14,11 @@ import * as c from "./constants";
 import * as vscode from "vscode";
 
 /**
+ * Regex to match OCaml source file names against.
+ */
+const ocamlFileRegex = /.*\.ml$/u;
+
+/**
  * Regexp to escape special regexp characters in strings.
  */
 const regexpRegex = /[\\^$.*+?()[\]{}|]/gu;
@@ -132,7 +137,16 @@ const noTestsFoundRegex =
  * The name of the test is returned in the match group `name`.
  */
 const testRegex =
-    /^[ \t]*(?:let%test(?:_unit)?|let%expect_test)\s+(?<name>"?.*?"?)\s+=/dgmu;
+    /^[ \t]*(?:let%test(?:_unit)?|let%expect_test)\s+"?(?<name>.*?)"?\s+=/dgmu;
+
+/**
+ * Return `true` if `name` has an OCaml source file suffix, `false` else.
+ * @param name The filename to check.
+ * @returns `true` if `name` has an OCaml source file suffix, `false` else.
+ */
+export function isOCamlFile(name: string) {
+    return Boolean(name.match(ocamlFileRegex));
+}
 
 /**
  * Escape special regexp characters in `s`.

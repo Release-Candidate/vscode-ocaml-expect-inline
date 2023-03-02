@@ -50,21 +50,6 @@ export const inlineTestsLabel = "Expect and Inline Tests";
 export const testSourceGlob = "**/*.ml";
 
 /**
- * Regex string to prepend to an inline test name.
- */
-export const inlineTestPrefix = "let%test\\s+";
-
-/**
- * Regex string to prepend to an inline test name that returns unit.
- */
-export const inlineUnitTestPrefix = "let%test_unit\\s+";
-
-/**
- * Regex string to prepend to an expect test.
- */
-export const expectTestPrefix = "let%expect_test\\s+";
-
-/**
  ******************************************************************************
  *  Test runner constants.
  * The test runner's command line is like this:

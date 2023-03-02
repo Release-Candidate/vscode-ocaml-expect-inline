@@ -14,6 +14,8 @@
 
 import * as c from "./constants";
 import * as h from "./extension_helpers";
+import * as io from "./osInteraction";
+import * as p from "./parsing";
 import * as rt from "./run_tests";
 import * as t from "./list_tests";
 import * as vscode from "vscode";
@@ -61,22 +63,20 @@ async function setupExtension(
     );
     context.subscriptions.push(controller);
 
+    const env = { config, controller, outChannel, testData };
+
     const runProfile = controller.createRunProfile(
         c.runProfileLabel,
         vscode.TestRunProfileKind.Run,
-        (r, tok) =>
-            rt.runHandler({ config, controller, outChannel, testData }, r, tok)
+        (r, tok) => rt.runHandler(env, r, tok)
     );
     context.subscriptions.push(runProfile);
 
-    subscribeToChanges({ config, controller, outChannel, testData }, context);
-
     if (c.getCfgDiscover(config)) {
-        await t.addTests(
-            { config, controller, outChannel, testData },
-            h.workspaceFolders()
-        );
+        await t.addTests(env, h.workspaceFolders());
     }
+
+    subscribeToChanges(env, context);
 }
 
 /**
@@ -100,12 +100,28 @@ function subscribeToChanges(env: h.Env, context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(disposable);
 
-    const disposable2 = vscode.workspace.onDidOpenTextDocument((e) =>
-        env.outChannel.appendLine(`on open: ${e.fileName}`)
-    );
+    const disposable2 = vscode.workspace.onDidOpenTextDocument((e) => {
+        if (p.isOCamlFile(e.uri.path)) {
+            const relPath = io.toRelativePath(e.uri);
+            env.outChannel.appendLine(
+                `on open: ${e.uri.path} workspace: ${relPath.root}`
+            );
+            const foundTests = p.parseTextForTests(e.getText());
+            const sanitizedTests = foundTests.map(({ name, range }) => ({
+                name:
+                    name === "_"
+                        ? `${relPath.path} Line ${range.start.line + 1}`
+                        : name,
+                range,
+            }));
+            sanitizedTests.forEach(({ name, range }) =>
+                env.outChannel.appendLine(`${name} ${range.start.line + 1}`)
+            );
+        }
+    });
     const disposable3 = vscode.workspace.onDidChangeTextDocument((e) => {
-        if (e.document.uri.path.endsWith(".ml")) {
-            env.outChannel.appendLine(`on change: ${e.document.fileName}`);
+        if (p.isOCamlFile(e.document.uri.path)) {
+            env.outChannel.appendLine(`on change: ${e.document.uri.path}`);
         }
     });
     context.subscriptions.push(disposable2);
