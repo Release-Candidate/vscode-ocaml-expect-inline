@@ -54,26 +54,6 @@ export async function runHandler(
 }
 
 /**
- * Check for new tests by running the text runners needed for the given tests.
- * Also removes deleted tests from the Test Explorer tree - if their parent is
- * included in the list of tests to run.
- * @param env The extension's environment.
- * @param request The run request containing the list of tests to run.
- */
-export async function checkForNewTests(
-    env: h.Env,
-    request: vscode.TestRunRequest
-) {
-    const workspaces: vscode.WorkspaceFolder[] = [];
-    if (request.include) {
-        workspaces.push(...h.testItemsToWorkspaces(request.include));
-    } else {
-        workspaces.push(...h.workspaceFolders());
-    }
-    return t.addTests(env, workspaces);
-}
-
-/**
  * Run a single test and set the test's state.
  * @param env The environment needed to run a test.
  * @param test The test to run.
@@ -113,7 +93,7 @@ async function runSingleTest(env: h.Env, test: vscode.TestItem) {
  * @param env The environment needed for the parsing.
  * @param data The data to parse and construct the test result.
  */
-// eslint-disable-next-line max-statements
+// eslint-disable-next-line max-statements, max-lines-per-function
 async function parseTestResult(
     env: h.Env,
     data: {
@@ -142,6 +122,21 @@ async function parseTestResult(
             const msg = data.out.stderr?.length ? data.out.stderr : output;
             await setRunnerError(env, msg, data.test);
             return;
+        }
+        if (p.noTestsFound(output)) {
+            env.outChannel.appendLine(`No Tests found: ${data.test.id}`);
+            const { parent } = data.test;
+            if (parent) {
+                env.run?.passed(data.test, Date.now() - data.startTime);
+                parent.children.delete(data.test.id);
+                if (parent.children.size === 0) {
+                    const grandparent = parent.parent;
+                    // eslint-disable-next-line max-depth
+                    if (grandparent) {
+                        grandparent?.children.delete(parent.id);
+                    }
+                }
+            }
         }
         const [errList] = p.parseTestErrors(output);
         const errElem = errList?.tests.find(

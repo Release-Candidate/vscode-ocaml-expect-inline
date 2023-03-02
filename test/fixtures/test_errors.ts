@@ -17,6 +17,10 @@
 export const noTestsFound = `ppx_inline_test error: the following -only-test flags matched nothing: lib/interp_common.ml:57.
 `;
 
+export const noTestsFound2 = `nbfdslkjfgh dnvôdôkvj dfhgkfdôsg
+ppx_inline_test error: the following -only-test flags matched nothing: lib/interp_common.ml:61.
+khbgelruts m.,b nhjsô gdfng`;
+
 /**
  * A compiler error.
  */

@@ -47,7 +47,6 @@ export async function activate(context: vscode.ExtensionContext) {
  * @param context The extension's context.
  * @param outChannel The channel to log to.
  */
-// eslint-disable-next-line max-statements
 async function setupExtension(
     context: vscode.ExtensionContext,
     outChannel: vscode.OutputChannel
@@ -70,26 +69,7 @@ async function setupExtension(
     );
     context.subscriptions.push(runProfile);
 
-    // eslint-disable-next-line no-unused-vars
-    controller.refreshHandler = async (_) => {
-        t.addTests(
-            { config, controller, outChannel, testData },
-            h.workspaceFolders()
-        );
-    };
-
-    const disposable = vscode.workspace.onDidChangeWorkspaceFolders(
-        async (e) => {
-            if (c.getCfgDiscover(config)) {
-                t.addTests(
-                    { config, controller, outChannel, testData },
-                    e.added
-                );
-            }
-            e.removed.map((r) => controller.items.delete(r.name));
-        }
-    );
-    context.subscriptions.push(disposable);
+    subscribeToChanges({ config, controller, outChannel, testData }, context);
 
     if (c.getCfgDiscover(config)) {
         await t.addTests(
@@ -97,4 +77,37 @@ async function setupExtension(
             h.workspaceFolders()
         );
     }
+}
+
+/**
+ * Subscribe to changes of workspaces, documents, ...
+ * @param env The extension's environment.
+ * @param context The extension's context to use.
+ */
+function subscribeToChanges(env: h.Env, context: vscode.ExtensionContext) {
+    // eslint-disable-next-line no-unused-vars
+    env.controller.refreshHandler = async (_) => {
+        t.addTests(env, h.workspaceFolders());
+    };
+
+    const disposable = vscode.workspace.onDidChangeWorkspaceFolders(
+        async (e) => {
+            if (c.getCfgDiscover(env.config)) {
+                t.addTests(env, e.added);
+            }
+            e.removed.map((r) => env.controller.items.delete(r.name));
+        }
+    );
+    context.subscriptions.push(disposable);
+
+    const disposable2 = vscode.workspace.onDidOpenTextDocument((e) =>
+        env.outChannel.appendLine(`on open: ${e.fileName}`)
+    );
+    const disposable3 = vscode.workspace.onDidChangeTextDocument((e) => {
+        if (e.document.uri.path.endsWith(".ml")) {
+            env.outChannel.appendLine(`on change: ${e.document.fileName}`);
+        }
+    });
+    context.subscriptions.push(disposable2);
+    context.subscriptions.push(disposable3);
 }

@@ -155,112 +155,65 @@ mocha.describe("Parsing Functions", () => {
     mocha.describe("getLineAndCol", () => {
         mocha.it("Empty string -> 0:0", () => {
             chai.assert.deepEqual(
-                parse.getLineAndCol(/^$/gmsu, "fsgdfsgg"),
-                { line: 0, col: 0, endLine: 0, endCol: 0 },
+                parse.getLineAndCol("".match(/^$/gmsu) as RegExpMatchArray, ""),
+                { name: "", loc: { line: 0, col: 0, endLine: 0, endCol: 0 } },
                 "Empty string -> 0:0"
             );
         });
         mocha.it("Not found -> 0:0", () => {
             chai.assert.deepEqual(
-                parse.getLineAndCol(/A/u, "fsgdfsgg"),
-                { line: 0, col: 0, endLine: 0, endCol: 0 },
+                parse.getLineAndCol(
+                    "fsgdfsgg".match(/A/u) as RegExpMatchArray,
+                    "fsgdfsgg"
+                ),
+                { name: "", loc: { line: 0, col: 0, endLine: 0, endCol: 0 } },
                 "Empty string -> 0:0"
             );
         });
         mocha.it("At position 0:4", () => {
             chai.assert.deepEqual(
-                parse.getLineAndCol(/o/u, "Hello World!"),
-                { line: 0, col: 4, endLine: 0, endCol: 5 },
+                parse.getLineAndCol(
+                    "Hello World!".match(/o/u) as RegExpMatchArray,
+                    "Hello World!"
+                ),
+                { name: "", loc: { line: 0, col: 4, endLine: 0, endCol: 5 } },
                 "Hell_o_ World!"
             );
         });
         mocha.it("At position 2:14", () => {
             chai.assert.deepEqual(
                 parse.getLineAndCol(
-                    /to search/u,
+                    "jkl\nhkkh\n01234567890123to search".match(
+                        /to search/u
+                    ) as RegExpMatchArray,
                     "jkl\nhkkh\n01234567890123to search"
                 ),
-                { line: 2, col: 14, endLine: 2, endCol: 23 },
+                { name: "", loc: { line: 2, col: 14, endLine: 2, endCol: 23 } },
                 "'to search' in 'jkl\\nhkkh\\n01234567890123to search'"
             );
         });
     });
     //==========================================================================
-    mocha.describe("getSourceRange", () => {
-        mocha.it("Empty string -> 0:0 - 0:1", () => {
+    mocha.describe("parseTextForTests", () => {
+        mocha.it("Empty string -> empty list", () => {
             chai.assert.deepEqual(
-                parse.getSourceRange("", "fsgdfsgg", false),
-                new vscode.Range(
-                    new vscode.Position(0, 0),
-                    new vscode.Position(0, 0)
-                ),
-                "Empty string -> Empty Range"
+                parse.parseTextForTests(""),
+                [],
+                "Empty string -> Empty list"
             );
         });
-        mocha.it("'parse 11*11' in testSource1", () => {
+        mocha.it("No test in text -> empty list", () => {
             chai.assert.deepEqual(
-                parse.getSourceRange(
-                    "parse 11*11",
-                    testSources.testSource1,
-                    false
-                ),
-                testSources.testSource1Range,
-                "'parse 11*11' testSource1Range"
+                parse.parseTextForTests("fsgdfsgg"),
+                [],
+                "No test in text -> Empty list"
             );
         });
-        mocha.it("'parse 11/-11' in testSource1", () => {
+        mocha.it("parse testSource1 -> list of tests", () => {
             chai.assert.deepEqual(
-                parse.getSourceRange(
-                    "parse 11/-11",
-                    testSources.testSource1,
-                    false
-                ),
-                testSources.testSource1Range2,
-                "'parse 11/-11' -> testSource1Range2"
-            );
-        });
-        mocha.it("'parse 21./-21.2' in testSource1", () => {
-            chai.assert.deepEqual(
-                parse.getSourceRange(
-                    "parse 21./-21.2",
-                    testSources.testSource1,
-                    false
-                ),
-                testSources.testSource1Range3,
-                "'parse 21./-21.2' -> testSource1Range3"
-            );
-        });
-        mocha.it("Inline 'parse 11*11' in testSource1", () => {
-            chai.assert.deepEqual(
-                parse.getSourceRange(
-                    "parse 11*11",
-                    testSources.testSource1,
-                    true
-                ),
-                testSources.testSource1RangeInl,
-                "Inline 'parse 11*11' -> testSource1Range"
-            );
-        });
-        mocha.it("Inline 'parse 11/-11' in testSource1", () => {
-            chai.assert.deepEqual(
-                parse.getSourceRange(
-                    "parse 11/-11",
-                    testSources.testSource1,
-                    true
-                ),
-                testSources.testSource1Range2Inl,
-                "Inline 'parse 11/-11' -> testSource1Range2"
-            );
-        });
-        mocha.it("Inline 'parse 21./-21.2' in testSource1", () => {
-            chai.assert.deepEqual(
-                parse.getSourceRange(
-                    "parse 21./-21.2",
-                    testSources.testSource1,
-                    true
-                ),
-                testSources.testSource1Range3Inl,
-                "Inline 'parse 21./-21.2' -> testSource1Range3"
+                parse.parseTextForTests(testSources.testSource1),
+                [],
+                "testSource1 -> testSource1Range"
             );
         });
     });
@@ -284,6 +237,12 @@ mocha.describe("Parsing Functions", () => {
             chai.assert.isTrue(
                 parse.noTestsFound(testErrors.noTestsFound),
                 "noTestsFound -> true"
+            );
+        });
+        mocha.it("No test found msg 2 -> true", () => {
+            chai.assert.isTrue(
+                parse.noTestsFound(testErrors.noTestsFound2),
+                "noTestsFoun2 -> true"
             );
         });
     });

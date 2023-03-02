@@ -57,15 +57,24 @@ const inlineRunnerLibrary = /inline_test_runner_(?<library>\S+)\./u;
 /**
  * Regexp to parse expect and inline test lists.
  * The lists are printed on `stdout`.
- * Groups: filename: `file`, line: `line`, startCol: `start`, endCol: `end` and
- * name: `name` (can be the empty string)
- *
+ * Match groups:
+ * - `file`
+ * - `line`
+ * - `start`
+ * - `end`
+ * - `name`
  */
 const testListRegex =
     /^\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):?\s+(?<name>.*?)\s*\([\p{N}.]+\s+sec\)$/gmu;
 
 /**
  * Regex to match a compile error.
+ * Match groups:
+ * - `file`
+ * - `line`
+ * - `start`
+ * - `end`
+ * - `name`
  */
 const compileError =
     /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):\s*?(?<name>.*?)\s*Error\s*.*?:/gmsu;
@@ -73,21 +82,41 @@ const compileError =
 /**
  * Regexp to parse test results for errors.
  * The failed tests are printed to `stderr`
+ *  Match groups:
+ * - `file`
+ * - `line`
+ * - `start`
+ * - `end`
+ * - `name`
  */
 const testErrorRegex =
     /[=]==$\n^File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):\s+?(?<name>[^\n]*?)\s+is.*?.$\n^FAILED/gmsu;
 
 /**
  * Regexp to parse test results for exceptions.
- * The failed tests are printed to `stderr`
+ * The failed tests are printed to `stderr`.
+ * Match groups:
+ * - `file`
+ * - `line`
+ * - `start`
+ * - `end`
+ * - `name`
  */
 const testExceptionRegex =
     /[=]==$\n^File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):\s+?(?<name>[^\n]*?)\s+threw.*?.$\n^FAILED/gmsu;
 
 /**
  * Regexp to parse test results of expect tests.
- * The failed tests are printed to `stderr`
+ * The failed tests are printed to `stderr`.
  * The line number is not the same as the line number of the test that failed.
+ * Match groups:
+ * - `file`
+ * - `line`
+ * - `start`
+ * - `end`
+ * - `name`
+ * - `exp` - expected value
+ * - `rec` - actual value
  */
 const testExpectRegex =
     /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):?\s*?(?<name>.*?)\s*(?:\([\p{N}.]+\s+sec\))?$.*?-\|.*?\[%expect\s+\{\|(?<exp>.*?)\|\}\].*?\+\|.*?\[%expect\s+\{\|(?<rec>.*?)\|\}\]/gmsu;
@@ -97,6 +126,13 @@ const testExpectRegex =
  */
 const noTestsFoundRegex =
     /^\s*ppx_inline_test error:\s+the\s+following\s+-only-test\s+flags\s+matched\s+nothing:/msu;
+
+/**
+ * Regex to match an expect or inline test.
+ * The name of the test is returned in the match group `name`.
+ */
+const testRegex =
+    /^[ \t]*(?:let%test(?:_unit)?|let%expect_test)\s+(?<name>"?.*?"?)\s+=/dgmu;
 
 /**
  * Escape special regexp characters in `s`.
@@ -162,51 +198,41 @@ export function isValidVersion(s: string | undefined) {
 }
 
 /**
- * Return a `Range` containing the start and end of the given test name in the
- * given text.
- * @param testLabel The name of the test to search for.
+ * Search for expect and inline test definitions in `text`.
+ * Return the name of the test in `name` and the `Range` in the field `range`.
  * @param text The text to search in.
- * @param isInline If this is an inline PPX test or not.
- * @returns A `Range` containing the test's name in `text`.
+ * @returns A list of found tests as objects `{ name, range }`.
  */
-export function getSourceRange(
-    testLabel: string,
-    text: string,
-    isInline: boolean
-) {
-    const regexPref = isInline ? c.inlineTestPrefix + '"' : '"';
-    return getRange(
-        new RegExp(regexPref + escapeRegex(testLabel), "dmsu"),
-        text.toString()
-    );
+export function parseTextForTests(text: string) {
+    const ranges = [];
+    const matches = text.matchAll(testRegex);
+    for (const match of matches) {
+        const { name, loc } = getLineAndCol(match, text);
+        const start = new vscode.Position(loc.line, loc.col);
+        const end = new vscode.Position(loc.endLine, loc.endCol);
+        ranges.push({ name, range: new vscode.Range(start, end) });
+    }
+
+    return ranges;
 }
 
 /**
- * Return the first location of `s` in `text`, as `Range`.
- *
- * @param r The regex to match.
- * @param text The text to search the string in.
- * @returns The first position of `r` in `text`.
- */
-export function getRange(r: RegExp, text: string) {
-    const loc = getLineAndCol(r, text);
-    const start = new vscode.Position(loc.line, loc.col);
-    const end = new vscode.Position(loc.endLine, loc.endCol);
-    return new vscode.Range(start, end);
-}
-
-/**
- * Return the first position of `r` in `text`, as line number and column number.
+ * Return the first position of `match` in `text`, as line number and column
+ * number.
  * The end of the match is returned in the fields `endLine` and `endCol`.
- * If it hasn't been found, `{ line: 0, col: 0, endLine: 0, endCol: 0 }` is returned
- * @param r The regex to match.
+ * If it hasn't been found,
+ * `{ name: "", loc: { line: 0, col: 0, endLine: 0, endCol: 0 } }` is
+ * returned.
+ * Require: the match `match` shall define the match group `name`.
+ * @param r The match, must contain a match group `name`.
  * @param text The text to search the string in.
- * @returns The first position of `r` in `text`, as line number and column
+ * @returns The position of `match` in `text`, as line number and column
  * number. The end of the match is returned in the fields `endLine` and
- * `endCol`.
+ * `endCol`. The `name` is returned in the field `name`.
  */
-export function getLineAndCol(r: RegExp, text: string) {
-    const match = text.match(r);
+// eslint-disable-next-line max-statements
+export function getLineAndCol(match: RegExpMatchArray, text: string) {
+    const name = match?.groups?.name ? match?.groups?.name : "";
     const idx = match?.index ? match.index : 0;
     const before = text.slice(0, idx);
     const col = idx - before.lastIndexOf("\n") - 1;
@@ -216,7 +242,7 @@ export function getLineAndCol(r: RegExp, text: string) {
     const addLine = after.split("\n").length - 1;
     const endCol =
         addLine === 0 ? col + matchLen : matchLen - after.lastIndexOf("\n") - 1;
-    return { line, col, endLine: line + addLine, endCol };
+    return { name, loc: { line, col, endLine: line + addLine, endCol } };
 }
 
 /**
@@ -428,7 +454,6 @@ function getName(match: RegExpMatchArray) {
  * Return `true`, if the 'no tests found' error message has been found in the
  * given string, `false` else.
  *
- * UNUSED. Left here for reference purposes.
  * @param text The string to parse for the 'no tests found' error.
  * @returns `true`, if the 'no tests found' error message has been found in the
  * given string, `false` else.
