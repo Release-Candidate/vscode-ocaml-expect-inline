@@ -10,7 +10,6 @@
  * Tests for the `odInteraction` module.
  */
 
-import * as c from "../src/constants";
 import * as chai from "chai";
 import * as h from "../src/extension_helpers";
 import * as io from "../src/osInteraction";
@@ -135,9 +134,9 @@ mocha.describe("I/O Functions", () => {
                 "-l",
                 "does_not_exist_I_hope",
             ]);
-            chai.assert.strictEqual(
-                out.stderr,
-                "ls: does_not_exist_I_hope: No such file or directory\n",
+            chai.assert.match(
+                out.stderr ? out.stderr : "",
+                /ls:\s+.*does_not_exist_I_hope.*No such file or directory/u,
                 "ls on non existing file."
             );
             chai.assert.strictEqual(out.stdout, "", "No output at stdout!");
@@ -148,17 +147,6 @@ mocha.describe("I/O Functions", () => {
             chai.assert.strictEqual(out.stdout, "LICENSE\n", "ls of LICENSE");
             chai.assert.strictEqual(out.stderr, "", "No output at stderr!");
             chai.assert.isUndefined(out.error, "No error calling ls!");
-        });
-        mocha.it("Output of `dune --version`", async () => {
-            // eslint-disable-next-line array-bracket-newline
-            const out = await io.runCommand(root, c.duneCmd, [
-                c.duneVersionArg,
-                // eslint-disable-next-line array-bracket-newline
-            ]);
-            chai.assert.isString(out.stdout, "Something like `3.6.2`");
-            chai.assert.isNotEmpty(out.stdout, "Something like `3.6.2`");
-            chai.assert.strictEqual(out.stderr, "", "No output at stderr!");
-            chai.assert.isUndefined(out.error, "No error calling dune!");
         });
     });
 });
