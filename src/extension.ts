@@ -14,7 +14,6 @@
 
 import * as c from "./constants";
 import * as h from "./extension_helpers";
-import * as io from "./osInteraction";
 import * as p from "./parsing";
 import * as rt from "./run_tests";
 import * as t from "./list_tests";
@@ -102,7 +101,7 @@ function subscribeToChanges(env: h.Env, context: vscode.ExtensionContext) {
 
     const disposable2 = vscode.workspace.onDidOpenTextDocument((e) => {
         if (p.isOCamlFile(e.uri.path)) {
-            const relPath = io.toRelativePath(e.uri);
+            const relPath = h.toRelativePath(e.uri);
             env.outChannel.appendLine(
                 `on open: ${e.uri.path} workspace: ${relPath.root}`
             );
@@ -110,7 +109,7 @@ function subscribeToChanges(env: h.Env, context: vscode.ExtensionContext) {
             const sanitizedTests = foundTests.map(({ name, range }) => ({
                 name:
                     name === "_"
-                        ? `${relPath.path} Line ${range.start.line + 1}`
+                        ? h.toTestName(relPath.path, range.start.line + 1)
                         : name,
                 range,
             }));

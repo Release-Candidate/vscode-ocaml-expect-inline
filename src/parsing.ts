@@ -11,7 +11,7 @@
  */
 
 import * as c from "./constants";
-import * as vscode from "vscode";
+import * as h from "./extension_helpers";
 
 /**
  * Regex to match OCaml source file names against.
@@ -222,9 +222,8 @@ export function parseTextForTests(text: string) {
     const matches = text.matchAll(testRegex);
     for (const match of matches) {
         const { name, loc } = getLineAndCol(match, text);
-        const start = new vscode.Position(loc.line, loc.col);
-        const end = new vscode.Position(loc.endLine, loc.endCol);
-        ranges.push({ name, range: new vscode.Range(start, end) });
+        const range = h.toRange(loc.line, loc.col, loc.endCol, loc.endLine);
+        ranges.push({ name, range });
     }
 
     return ranges;
@@ -461,7 +460,9 @@ function getFileName(match: RegExpMatchArray) {
 
 function getName(match: RegExpMatchArray) {
     const name = match.groups?.name ? match.groups.name.trim() : "";
-    return name.length ? name : `${getFileName(match)} Line ${getLine(match)}`;
+    return name.length
+        ? name
+        : h.toTestName(getFileName(match), getLine(match));
 }
 
 /**

@@ -316,7 +316,8 @@ function getTestItem(data: {
         item.range = h.toRange(
             data.line ? data.line - 1 : 0,
             data.colStart,
-            data.colEnd
+            data.colEnd,
+            data.line
         );
         return item;
     }
@@ -326,7 +327,8 @@ function getTestItem(data: {
         item.range = h.toRange(
             data.line ? data.line - 1 : 0,
             data.colStart,
-            data.colEnd
+            data.colEnd,
+            data.line
         );
     }
 

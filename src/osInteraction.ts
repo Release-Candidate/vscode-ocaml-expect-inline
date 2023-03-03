@@ -19,7 +19,6 @@ import internal = require("stream");
 import * as parse from "./parsing";
 import * as vscode from "vscode";
 import path = require("path");
-import { Url } from "url";
 
 /**
  * Object holding the output of a process.
@@ -42,18 +41,6 @@ export type Output = {
     stderr?: string;
     error?: string;
 };
-
-/**
- * Return the root and relative path to a workspace root of `uri`.
- * @param absPath The absolute path to make relative to `root`
- * @returns The relative path of `uri` in `path`, the root in `root`.
- */
-export function toRelativePath(uri: vscode.Uri) {
-    return {
-        root: vscode.workspace.getWorkspaceFolder(uri),
-        path: vscode.workspace.asRelativePath(uri, false),
-    };
-}
 
 /**
  * Check which of the given relative directories exist and are directories.

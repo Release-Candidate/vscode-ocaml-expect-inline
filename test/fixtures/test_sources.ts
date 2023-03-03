@@ -10,7 +10,7 @@
  * File containing test sources and the ranges of certain test names in these.
  */
 
-import * as vscode from "vscode";
+import * as h from "../../src/extension_helpers";
 
 /* eslint-disable no-magic-numbers */
 
@@ -88,135 +88,78 @@ let%test "parse 21./-21.2" = failwith "NO"
 export const testSource1Ranges = [
     {
         name: "parse true",
-        range: new vscode.Range(
-            new vscode.Position(23, 0),
-            new vscode.Position(23, 23)
-        ),
+        range: h.toRange(23, 0, 23),
     },
     {
         name: "_",
-        range: new vscode.Range(
-            new vscode.Position(24, 0),
-            new vscode.Position(24, 17)
-        ),
+        range: h.toRange(24, 0, 17),
     },
     {
         name: "parse false",
-        range: new vscode.Range(
-            new vscode.Position(25, 0),
-            new vscode.Position(25, 24)
-        ),
+        range: h.toRange(25, 0, 24),
     },
     {
         name: "parse not true1",
-        range: new vscode.Range(
-            new vscode.Position(26, 0),
-            new vscode.Position(26, 28)
-        ),
+        range: h.toRange(26, 0, 28),
     },
     {
         name: "parse not false",
-        range: new vscode.Range(
-            new vscode.Position(27, 0),
-            new vscode.Position(27, 28)
-        ),
+        range: h.toRange(27, 0, 28),
     },
     {
         name: "parse 1",
-        range: new vscode.Range(
-            new vscode.Position(28, 0),
-            new vscode.Position(28, 20)
-        ),
+        range: h.toRange(28, 0, 20),
     },
     {
         name: "parse 1.1",
-        range: new vscode.Range(
-            new vscode.Position(29, 0),
-            new vscode.Position(29, 22)
-        ),
+        range: h.toRange(29, 0, 22),
     },
     {
         name: "parse -1",
-        range: new vscode.Range(
-            new vscode.Position(30, 0),
-            new vscode.Position(30, 21)
-        ),
+        range: h.toRange(30, 0, 21),
     },
     {
         name: "parse -1.1",
-        range: new vscode.Range(
-            new vscode.Position(31, 0),
-            new vscode.Position(31, 23)
-        ),
+        range: h.toRange(31, 0, 23),
     },
     {
         name: "Expect -1.1",
-        range: new vscode.Range(
-            new vscode.Position(33, 0),
-            new vscode.Position(33, 31)
-        ),
+        range: h.toRange(33, 0, 31),
     },
     {
         name: "parse 11+11",
-        range: new vscode.Range(
-            new vscode.Position(37, 0),
-            new vscode.Position(37, 24)
-        ),
+        range: h.toRange(37, 0, 24),
     },
     {
         name: "parse not true",
-        range: new vscode.Range(
-            new vscode.Position(39, 0),
-            new vscode.Position(39, 27)
-        ),
+        range: h.toRange(39, 0, 27),
     },
     {
         name: "parse 11-11",
-        range: new vscode.Range(
-            new vscode.Position(42, 0),
-            new vscode.Position(42, 24)
-        ),
+        range: h.toRange(42, 0, 24),
     },
     {
         name: "parse 21.-21.2",
-        range: new vscode.Range(
-            new vscode.Position(44, 0),
-            new vscode.Position(44, 32)
-        ),
+        range: h.toRange(44, 0, 32),
     },
     {
         name: "parse 11*11",
-        range: new vscode.Range(
-            new vscode.Position(48, 0),
-            new vscode.Position(48, 24)
-        ),
+        range: h.toRange(48, 0, 24),
     },
     {
         name: "parse 21.*21.2",
-        range: new vscode.Range(
-            new vscode.Position(50, 0),
-            new vscode.Position(50, 27)
-        ),
+        range: h.toRange(50, 0, 27),
     },
     {
         name: "parse 11/-11",
-        range: new vscode.Range(
-            new vscode.Position(53, 0),
-            new vscode.Position(53, 25)
-        ),
+        range: h.toRange(53, 0, 25),
     },
     {
         name: "_",
-        range: new vscode.Range(
-            new vscode.Position(56, 0),
-            new vscode.Position(56, 19)
-        ),
+        range: h.toRange(56, 0, 19),
     },
     {
         name: "parse 21./-21.2",
-        range: new vscode.Range(
-            new vscode.Position(60, 0),
-            new vscode.Position(60, 28)
-        ),
+        range: h.toRange(60, 0, 28),
     },
 ];

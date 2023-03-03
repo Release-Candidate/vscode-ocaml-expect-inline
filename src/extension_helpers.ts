@@ -40,6 +40,75 @@ export type Env = {
 };
 
 /**
+ * Return the mapping of `f` on `children`.
+ * @param children The `TestItemCollection` to map.
+ * @param f The function to apply to each `TestItem`.
+ * @returns The mapping of `f` on `children`.
+ */
+export function map<T>(
+    children: vscode.TestItemCollection,
+    // eslint-disable-next-line no-unused-vars
+    f: (item: vscode.TestItem) => T
+) {
+    const result: T[] = [];
+    children.forEach((item) => result.push(f(item)));
+    return result;
+}
+
+/**
+ * Filter `children` by predicate `f`.
+ * @param children The `TestItemCollection` to filter.
+ * @param f The predicate function to apply to each `TestItem`.
+ * @returns A list of `TestItem`s that the predicate `f` returns `true` for.
+ */
+export function filter(
+    children: vscode.TestItemCollection,
+    // eslint-disable-next-line no-unused-vars
+    f: (item: vscode.TestItem) => boolean
+) {
+    const result: vscode.TestItem[] = [];
+    children.forEach((item) => {
+        if (f(item)) {
+            result.push(item);
+        }
+    });
+    return result;
+}
+
+/**
+ * Return a fold of `children` by `f`, using `init` as the initial value for
+ * the accumulator.
+ * @param children The `TestItemCollection` to fold.
+ * @param f The function to use to fold. The first argument is the accumulator,
+ * the second the current `TestItem` of `children`.
+ * @param init The initial value to start the fold with.
+ * @returns A fold of `children` by `f`, using `init` as the initial value for
+ * the accumulator.
+ */
+export function reduce<T>(
+    children: vscode.TestItemCollection,
+    // eslint-disable-next-line no-unused-vars
+    f: (acc: T, item: vscode.TestItem) => T,
+    init: T
+) {
+    let result = init;
+    children.forEach((item) => {
+        result = f(result, item);
+    });
+    return result;
+}
+
+/**
+ * Return the name of the test in the format `FILENAME line LINE_NUMBER`.
+ * @param path The source file's path.
+ * @param line The line number, starting from 1.
+ * @returns The name of the test in the format `FILENAME line LINE_NUMBER`.
+ */
+export function toTestName(path: string, line: number) {
+    return `${path} Line ${line}`;
+}
+
+/**
  * Return the list of currently opened workspace folders, and an empty list `[]`
  *  if no workspace (that includes a folder) has been opened.
  * @returns The list ('or' an empty list `[]`) of currently opened workspace
@@ -50,20 +119,38 @@ export function workspaceFolders() {
 }
 
 /**
- * Return a `Range` with the given `line`, start and end column.
+ * Return the root and relative path to a workspace root of `uri`.
+ * @param absPath The absolute path to make relative to `root`
+ * @returns The relative path of `uri` in `path`, the root in `root`.
+ */
+export function toRelativePath(uri: vscode.Uri) {
+    return {
+        root: vscode.workspace.getWorkspaceFolder(uri),
+        path: vscode.workspace.asRelativePath(uri, false),
+    };
+}
+
+/**
+ * Return a `Range` with the given `line`, start and end column and an optional
+ * end line.
  * @param line The line the range is located in.
  * @param colStart The start column of the range.
  * @param colEnd The end column of the range.
- * @returns A `Range` with the given `line`, start and end column.
+ * @param endLine The end line of the range, if this is not set, the start line
+ * `line` is used instead.
+ * @returns A `Range` with the given `line`, `endline`, start and end column.
  */
+// eslint-disable-next-line max-params
 export function toRange(
     line: number | undefined,
     colStart: number | undefined,
-    colEnd: number | undefined
+    colEnd: number | undefined,
+    endLine?: number
 ) {
+    const startLine = line ? line : 0;
     return new vscode.Range(
-        new vscode.Position(line ? line : 0, colStart ? colStart : 0),
-        new vscode.Position(line ? line : 0, colEnd ? colEnd : 0)
+        new vscode.Position(startLine, colStart ? colStart : 0),
+        new vscode.Position(endLine ? endLine : startLine, colEnd ? colEnd : 0)
     );
 }
 

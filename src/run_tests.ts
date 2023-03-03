@@ -184,12 +184,7 @@ function setRunnerError(env: h.Env, msg: string, test: vscode.TestItem) {
     const mess = new vscode.TestMessage(msg);
     const loc = new vscode.Location(
         test.uri ? test.uri : vscode.Uri.file(""),
-        test.range
-            ? test.range
-            : new vscode.Range( // eslint-disable-next-line indent
-                  new vscode.Position(0, 0), // eslint-disable-next-line indent
-                  new vscode.Position(0, 0) // eslint-disable-next-line indent
-              )
+        test.range ? test.range : h.toRange(0, 0, 0)
     );
     mess.location = loc;
     env.run?.errored(test, mess);
@@ -213,7 +208,7 @@ async function constructMessage(data: {
 
     message.location = new vscode.Location(
         data.test.uri ? data.test.uri : vscode.Uri.file(""),
-        data.test.range ? data.test.range : new vscode.Position(0, 0)
+        data.test.range ? data.test.range : h.toRange(0, 0, 0)
     );
 
     message.actualOutput = data.errElem.actual;
