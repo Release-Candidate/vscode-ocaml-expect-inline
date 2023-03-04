@@ -94,6 +94,44 @@ mocha.describe("I/O Functions", () => {
         });
     });
     //==========================================================================
+    mocha.describe("getListParentDirs", () => {
+        mocha.it("Empty string", async () => {
+            chai.assert.deepEqual(
+                io.getListParentDirs(""),
+                ["."],
+                "Empty string -> ./"
+            );
+        });
+        mocha.it("No directory part -> ./", async () => {
+            chai.assert.deepEqual(
+                io.getListParentDirs("just_a_filename.suf"),
+                ["."],
+                "No directory part -> ./"
+            );
+        });
+        mocha.it("./ -> ./", async () => {
+            chai.assert.deepEqual(
+                io.getListParentDirs("./"),
+                ["."],
+                "./ -> ./"
+            );
+        });
+        mocha.it("./FILENAME -> ./", async () => {
+            chai.assert.deepEqual(
+                io.getListParentDirs("./just_a_filename.suf"),
+                ["."],
+                "./FILENAME -> ./"
+            );
+        });
+        mocha.it("sub1/sub2/sub3/filename -> list of subdirs", async () => {
+            chai.assert.deepEqual(
+                io.getListParentDirs("sub1/sub2/sub3/filename"),
+                ["sub1/sub2/sub3", "sub1/sub2", "sub1", "."],
+                "sub1/sub2/sub3/filename"
+            );
+        });
+    });
+    //==========================================================================
     mocha.describe("findFilesRelative", () => {
         mocha.it("No file exists", async () => {
             chai.assert.deepEqual(

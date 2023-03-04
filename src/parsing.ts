@@ -10,7 +10,6 @@
  * Parse test lists, test results, files for tests, ...
  */
 
-import * as c from "./constants";
 import * as h from "./extension_helpers";
 
 /**
@@ -38,20 +37,11 @@ const versionRegex =
     /^[\s]*[vV]?(?:ersion)?\s*(?<version>[\p{N}][\p{N}\p{P}~]*)[\s]*$/mu;
 
 /**
- * Regex to parse dune test definitions to get the name of the tests
- * executables, stored in group `path`.
- * Parsing `(test[s] (name[s] ...))` stanzas.
+ * Regex to parse dune library definition to get the name of the library,
+ * stored in group `name`.
+ * Parsing `(library (name ...))` stanzas.
  */
-const duneTestRegex1 =
-    /\(test[s]?\s+\(name[s]?(?<path>(?:\s+[^()\s]+)+)\s*\).*?\s*\)/gmsu;
-
-/**
- * Regex to parse dune test definitions to get the name of the tests
- * executables.
- * Parsing `(test[s] (name[s] ...))` stanzas.
- */
-const duneTestRegex2 =
-    /\(alias\s+(?:\(name\s+)?runtest\s*\).*?\(action\s+\(run\s+(?:%\{exe:)?(?<path>[^()\s}]+)/gmsu;
+const duneLibraryRegex = /^\(library\s+.*?\(name\s+(?<name>\S+)\s*\)/su;
 
 /**
  * Regex to parse the executable of an inline runner for the library name.
@@ -259,45 +249,22 @@ export function getLineAndCol(match: RegExpMatchArray, text: string) {
 }
 
 /**
- * Parse the given dune stanzas for paths to test executables.
- * @param s The content of a dune file to parse for test executable names.
- * @returns A list of found test executable paths relative to the dune file
- * location.
+ * Parse the given dune stanzas for a library stanza.
+ * @param s The content of a dune file to parse for a library name.
+ * @returns The name of the found library on success, `undefined` if no library
+ * stanza has been found.
  */
-export function parseDuneTests(s: string) {
+export function parseDuneLib(s: string) {
     if (!s.length) {
-        return [];
+        return undefined;
     }
 
-    const paths: string[] = [];
-    const matches1 = s.matchAll(duneTestRegex1);
-    for (const match of matches1) {
-        paths.push(...matchToRelPath(match));
-    }
-    const matches2 = s.matchAll(duneTestRegex2);
-    for (const match of matches2) {
-        paths.push(...matchToRelPath(match));
+    const match = s.match(duneLibraryRegex);
+    if (match) {
+        return match.groups?.name;
     }
 
-    return paths;
-}
-
-/**
- * Add the relative path of the matched executable to the list of paths.
- * Add an executable suffix if not already there and an `./` prefix if the path
- * isn't already a relative one.
- * Require: the regex match shall contain the match group `path`.
- * @param match The match object to process.
- */
-function matchToRelPath(match: RegExpMatchArray) {
-    const exes = match.groups ? match.groups.path.trim().split(/\s+/u) : [];
-    const relPaths = exes.map((p) => {
-        const pa = p.trim();
-        const pab = pa.endsWith(c.exeSuffix) ? pa : pa.concat(c.exeSuffix);
-        return pab.startsWith(".") ? pab : "./".concat(pab);
-    });
-
-    return relPaths;
+    return undefined;
 }
 
 /**
@@ -434,30 +401,65 @@ function listMatchToObject(match: RegExpMatchArray) {
     };
 }
 
+/**
+ * Return the `expected` part of a test failure.
+ * @param match The matched regex to process.
+ * @returns The `expected` part of a test failure.
+ */
 function getExpected(match: RegExpMatchArray) {
     return match.groups?.exp ? match.groups.exp : "";
 }
 
+/**
+ * Return the `actual` part of a test failure.
+ * @param match The matched regex to process.
+ * @returns The `actual` part of a test failure.
+ */
 function getActual(match: RegExpMatchArray) {
     return match.groups?.rec ? match.groups.rec : "";
 }
 
+/**
+ * Return the ending column of a test failure.
+ * @param match The matched regex to process.
+ * @returns The ending column of a test failure.
+ */
 function getEndCol(match: RegExpMatchArray) {
     return match.groups?.end ? parseInt(match.groups.end, 10) : 0;
 }
 
+/**
+ * Return the starting column of a test failure.
+ * @param match The matched regex to process.
+ * @returns The starting column of a test failure.
+ */
 function getStartCol(match: RegExpMatchArray) {
     return match.groups?.start ? parseInt(match.groups.start, 10) : 0;
 }
 
+/**
+ * Return the source line of a test failure.
+ * @param match The matched regex to process.
+ * @returns The source line of a test failure.
+ */
 function getLine(match: RegExpMatchArray) {
     return match.groups?.line ? parseInt(match.groups.line, 10) : 0;
 }
 
+/**
+ * Return the source file name of a test failure.
+ * @param match The matched regex to process.
+ * @returns The source file name of a test failure.
+ */
 function getFileName(match: RegExpMatchArray) {
     return match.groups?.file ? match.groups.file : "";
 }
 
+/**
+ * Return the test name of a test failure.
+ * @param match The matched regex to process.
+ * @returns The test name of a test failure.
+ */
 function getName(match: RegExpMatchArray) {
     const name = match.groups?.name ? match.groups.name.trim() : "";
     return name.length

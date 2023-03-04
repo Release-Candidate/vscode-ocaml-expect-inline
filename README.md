@@ -1,5 +1,6 @@
 # OCaml Expect and Inline Test Explorer for Visual Studio Code
 
+[![Test](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/actions/workflows/test.yml/badge.svg)](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/actions/workflows/test.yml)
 [![Lint](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/actions/workflows/lint.yml/badge.svg)](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/actions/workflows/lint.yml)
 [![Release](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/actions/workflows/release.yml/badge.svg)](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/actions/workflows/release.yml)
 [![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/Release-Candidate.vscode-ocaml-expect-inline)](https://marketplace.visualstudio.com/items?itemName=release-candidate.vscode-ocaml-expect-inline)

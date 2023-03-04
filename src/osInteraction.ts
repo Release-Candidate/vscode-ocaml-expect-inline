@@ -43,6 +43,26 @@ export type Output = {
 };
 
 /**
+ * Return a list of all relative parent directories of the given relative path.
+ * The first directory in the list is `dirname(relPath)`, the last one is always
+ * `.`, the root of the relative path.
+ * @param relPath The relative path to process.
+ * @returns A list of all relative parent directories of the given relative path.
+ */
+export function getListParentDirs(relPath: string) {
+    return addParent(relPath, []);
+
+    function addParent(dir: string, list: string[]) {
+        if (dir !== ".") {
+            const parent = path.dirname(dir);
+            list.push(parent);
+            addParent(parent, list);
+        }
+        return list;
+    }
+}
+
+/**
  * Check which of the given relative directories exist and are directories.
  * Return a list of directories, so that for all of the returned directories
  * path holds: `root`/path exists and path is in `dirs`.
@@ -197,6 +217,25 @@ export async function runCommand(
     } catch (error) {
         return { error: (error as Error).message };
     }
+}
+
+/**
+ * Build the test runner for the library `libName` which sources are contained
+ * in `libDir`.
+ * @param root The current working directory for the dune command.
+ * @param libDir The relative path (from `root`) to the library's sources.
+ * @param libName The name of the library the test runner is build for.
+ * @returns The output of the build.
+ */
+export async function runDuneBuild(
+    root: vscode.WorkspaceFolder,
+    libDir: string,
+    libName: string
+) {
+    return runCommand(root, c.duneCmd, [
+        c.duneBuildArg,
+        path.normalize(c.fullRunnerPath(libDir, libName)),
+    ]);
 }
 
 /**

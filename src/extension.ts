@@ -15,6 +15,7 @@
 import * as c from "./constants";
 import * as h from "./extension_helpers";
 import * as p from "./parsing";
+import * as parseSource from "./parse_source";
 import * as rt from "./run_tests";
 import * as t from "./list_tests";
 import * as vscode from "vscode";
@@ -75,7 +76,7 @@ async function setupExtension(
         await t.addTests(env, h.workspaceFolders());
     }
 
-    subscribeToChanges(env, context);
+    await subscribeToChanges(env, context);
 }
 
 /**
@@ -83,7 +84,10 @@ async function setupExtension(
  * @param env The extension's environment.
  * @param context The extension's context to use.
  */
-function subscribeToChanges(env: h.Env, context: vscode.ExtensionContext) {
+async function subscribeToChanges(
+    env: h.Env,
+    context: vscode.ExtensionContext
+) {
     // eslint-disable-next-line no-unused-vars
     env.controller.refreshHandler = async (_) => {
         t.addTests(env, h.workspaceFolders());
@@ -99,28 +103,14 @@ function subscribeToChanges(env: h.Env, context: vscode.ExtensionContext) {
     );
     context.subscriptions.push(disposable);
 
-    const disposable2 = vscode.workspace.onDidOpenTextDocument((e) => {
+    const disposable2 = vscode.workspace.onDidOpenTextDocument(async (e) => {
         if (p.isOCamlFile(e.uri.path)) {
-            const relPath = h.toRelativePath(e.uri);
-            env.outChannel.appendLine(
-                `on open: ${e.uri.path} workspace: ${relPath.root}`
-            );
-            const foundTests = p.parseTextForTests(e.getText());
-            const sanitizedTests = foundTests.map(({ name, range }) => ({
-                name:
-                    name === "_"
-                        ? h.toTestName(relPath.path, range.start.line + 1)
-                        : name,
-                range,
-            }));
-            sanitizedTests.forEach(({ name, range }) =>
-                env.outChannel.appendLine(`${name} ${range.start.line + 1}`)
-            );
+            await parseSource.parseTextDocument(env, e);
         }
     });
-    const disposable3 = vscode.workspace.onDidChangeTextDocument((e) => {
-        if (p.isOCamlFile(e.document.uri.path)) {
-            env.outChannel.appendLine(`on change: ${e.document.uri.path}`);
+    const disposable3 = vscode.workspace.onDidSaveTextDocument(async (e) => {
+        if (p.isOCamlFile(e.uri.path)) {
+            await parseSource.parseTextDocument(env, e);
         }
     });
     context.subscriptions.push(disposable2);

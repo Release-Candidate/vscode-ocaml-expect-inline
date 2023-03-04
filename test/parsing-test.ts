@@ -265,50 +265,47 @@ mocha.describe("Parsing Functions", () => {
         });
     });
     //==========================================================================
-    mocha.describe("parseDuneTests", () => {
-        mocha.it("Empty string -> empty list", () => {
-            chai.assert.deepEqual(
-                parse.parseDuneTests(""),
-                [],
-                "Empty string -> empty list"
+    mocha.describe("parseDuneLib", () => {
+        mocha.it("Empty string -> undefined", () => {
+            chai.assert.isUndefined(
+                parse.parseDuneLib(""),
+                "Empty string -> undefined"
             );
         });
-        mocha.it("Not a dune file -> empty list", () => {
-            chai.assert.deepEqual(
+        mocha.it("Not a dune file -> undefined", () => {
+            chai.assert.isUndefined(
                 // eslint-disable-next-line no-undefined
-                parse.parseDuneTests(
+                parse.parseDuneLib(
                     "shdfljkg hfdhdf (tests notest notest2) sgjlsdg hjsdfgl"
                 ),
-                [],
-                "Not a dune file -> empty list"
+                "Not a dune file -> undefined"
             );
         });
-        mocha.it("dune test -> one test", () => {
+        mocha.it("dune file -> library", () => {
             chai.assert.deepEqual(
-                parse.parseDuneTests(duneTests.duneFile1),
-                duneTests.duneFile1Exe,
-                "dune test -> one test"
+                parse.parseDuneLib(duneTests.duneFile1),
+                duneTests.duneFile1Lib,
+                "duneFile1 -> duneFile1Lib"
             );
         });
-        mocha.it("dune tests -> 4 tests", () => {
+        mocha.it("dune file 2 -> library", () => {
             chai.assert.deepEqual(
-                parse.parseDuneTests(duneTests.duneFile2),
-                duneTests.duneFile2Exe,
-                "duneFile2 -> duneFile2Exe"
+                parse.parseDuneLib(duneTests.duneFile2),
+                duneTests.duneFile2Lib,
+                "duneFile2 -> duneFile2Lib"
             );
         });
-        mocha.it("run %{exe:main.exe} -> main.exe", () => {
-            chai.assert.deepEqual(
-                parse.parseDuneTests(duneTests.duneFile3),
-                duneTests.duneFile3Exe,
-                "duneFile3 -> duneFile3Exe"
+        mocha.it("dune file without library -> undefined", () => {
+            chai.assert.isUndefined(
+                parse.parseDuneLib(duneTests.duneFile3),
+                "duneFile3 -> duneFile2Lib"
             );
         });
-        mocha.it("run ./...exe -> 2 tests", () => {
+        mocha.it("dune file 4 -> library", () => {
             chai.assert.deepEqual(
-                parse.parseDuneTests(duneTests.duneFile4),
-                duneTests.duneFile4Exe,
-                "duneFile4 -> duneFile4Exe"
+                parse.parseDuneLib(duneTests.duneFile4),
+                duneTests.duneFile4Lib,
+                "duneFile4 -> duneFile4Lib"
             );
         });
     });

@@ -7,29 +7,42 @@
  * Date:     28.Feb.2023
  *
  * ==============================================================================
- * Dune test configuration examples and expected results of parsing them.
+ * Dune library configuration examples and expected results of parsing them.
  */
 
 /**
- * Dune file using `test` and `name` stanzas.
+ * Dune file using `library` and `name` stanzas.
  */
-export const duneFile1 = `(test
+export const duneFile1 = `(library
  (name test)
  (libraries alcotest lib1 lib2
     another-lib3))`;
 
 /**
- * The array of test executables resulting from parsing `duneFile1`.
+ * The name of the library resulting from parsing `duneFile1`.
  */
-export const duneFile1Exe = ["./test.exe"];
+export const duneFile1Lib = "test";
 
 /**
- * Dune file using `tests` and `names` stanzas.
+ * Dune file using `library` and `name` stanzas, with another stanza in between.
  */
-export const duneFile2 = `(tests
- (names
+export const duneFile2 = `(library
+ (wrapped false)
+ (name testlib)
+ (libraries alcotest lib1 lib2
+    another-lib3))`;
+
+/**
+ * The name of the library resulting from parsing `duneFile2`.
+ */
+export const duneFile2Lib = "testlib";
+
+/**
+ * Dune file using `tests`, `libraries` and `names` stanzas. No `library`
+ */
+export const duneFile3 = `(tests
+ (name
   testName1
-  testName2 testName3 testName4
   )
  (libraries alcotest
     lib1
@@ -37,65 +50,19 @@ export const duneFile2 = `(tests
     another-lib3))`;
 
 /**
- * The array of test executables resulting from parsing `duneFile2`.
+ * Dune file using `library` and `name` stanzas.
  */
-export const duneFile2Exe = [
-    "./testName1.exe",
-    "./testName2.exe",
-    "./testName3.exe",
-    "./testName4.exe",
-];
-
-/**
- * Dune file using `alias` and `(name runtest)` stanzas.
- */
-export const duneFile3 = `(executable
- (name main)
- (libraries lib1 lib2 )
- (preprocess (pps some_ppx)))
-
-(alias
- (name runtest)
- (package package-name)
- (action (run %{exe:main.exe})))`;
-
-/**
- * The array of test executables resulting from parsing `duneFile3`.
- */
-export const duneFile3Exe = ["./main.exe"];
-
-/**
- * Dune file using `rule` and `(alias runtest)` stanzas.
- */
-export const duneFile4 = `(executables
- (names test test2)
- (libraries
-  alcotest
-  alcotest-lwt
-  lib1 lib2
-  lib3 )
+export const duneFile4 = `(library
+ (name alocaml)
+ (inline_tests)
  (preprocess
-  (pps some_ppx)))
+  (pps sedlex.ppx ppx_inline_test ppx_expect ppx_assert))
+ (libraries sedlex menhirLib sexplib base stdio))
 
-(rule
- (alias runtest)
- (package package-1)
- (deps
-  (source_tree src2)
-  (package package3))
- (action
-  (run ./test2.exe -e)))
-
-(rule
- (alias runtest)
- (package package-2)
- (deps
-  (source_tree src1)
-  (package package4))
- (action
-  (run ./test.exe)))`;
+(menhir
+ (modules parser))`;
 
 /**
- * The array of test executables resulting from parsing `duneFile4`.
+ * The name of the library resulting from parsing `duneFile4`.
  */
-export const duneFile4Exe = ["./test2.exe", "./test.exe"];
+export const duneFile4Lib = "alocaml";

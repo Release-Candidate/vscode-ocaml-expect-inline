@@ -77,7 +77,7 @@ async function addWorkspaceTests(env: h.Env, root: vscode.WorkspaceFolder) {
 
         return env.controller.createTestItem(
             root.name,
-            `Workspace: ${root.name}`,
+            c.workspaceLabel(root.name),
             root.uri
         );
     }
@@ -196,11 +196,7 @@ async function parseTestListOutput(
                 sourcePath,
                 groupItem,
                 root: data.root,
-                suiteLabel: data.suiteLabel,
-                rPath: data.rPath,
-                line: t.line,
-                startCol: t.startCol,
-                endCol: t.endCol,
+                runnerPath: data.rPath,
             });
         }
 
@@ -258,18 +254,14 @@ function deleteNonExisting() {
  * @param env The environment needed to add the test.
  * @param data The data needed to add the test item to the tree.
  */
-async function addTestItem(
+export function addTestItem(
     env: h.Env,
     data: {
         t: p.TestType;
         sourcePath: vscode.Uri;
         groupItem: vscode.TestItem;
         root: vscode.WorkspaceFolder;
-        suiteLabel: string;
-        rPath: string;
-        line?: number;
-        startCol?: number;
-        endCol?: number;
+        runnerPath: string;
     }
 ) {
     const testItem = getTestItem({
@@ -286,8 +278,8 @@ async function addTestItem(
     if (!env.testData.get(testItem)) {
         env.testData.set(testItem, {
             root: data.root,
-            runner: data.rPath,
-            library: p.getLibrary(data.rPath),
+            runner: data.runnerPath,
+            library: p.getLibrary(data.runnerPath),
             file: data.sourcePath.path,
         });
     }
@@ -316,8 +308,7 @@ function getTestItem(data: {
         item.range = h.toRange(
             data.line ? data.line - 1 : 0,
             data.colStart,
-            data.colEnd,
-            data.line
+            data.colEnd
         );
         return item;
     }
@@ -327,8 +318,7 @@ function getTestItem(data: {
         item.range = h.toRange(
             data.line ? data.line - 1 : 0,
             data.colStart,
-            data.colEnd,
-            data.line
+            data.colEnd
         );
     }
 

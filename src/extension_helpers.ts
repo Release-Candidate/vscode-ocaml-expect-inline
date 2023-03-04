@@ -102,7 +102,7 @@ export function reduce<T>(
  * Return the name of the test in the format `FILENAME line LINE_NUMBER`.
  * @param path The source file's path.
  * @param line The line number, starting from 1.
- * @returns The name of the test in the format `FILENAME line LINE_NUMBER`.
+ * @returns The name of the test in the format `FILENAME Line LINE_NUMBER`.
  */
 export function toTestName(path: string, line: number) {
     return `${path} Line ${line}`;

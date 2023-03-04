@@ -44,6 +44,10 @@ export const runProfileLabel = "Run PPX test";
  */
 export const inlineTestsLabel = "Expect and Inline Tests";
 
+export function workspaceLabel(id: string) {
+    return `Workspace: ${id}`;
+}
+
 /**
  * Glob to search for sources of tests.
  */
@@ -60,6 +64,11 @@ export const testSourceGlob = "**/*.ml";
  * Path of the build sandbox directory to ignore when searching for executables.
  */
 export const sandboxDir = "_build/.sandbox";
+
+/**
+ * The root path of the dune build directory, `./_build/default`.
+ */
+export const buildDirRoot = "_build/default";
 
 /**
  * The cmd to call `dune`.
@@ -82,6 +91,12 @@ export const duneVersionArg = "--version";
  * Used to execute the test runners.
  */
 export const duneExecArg = "exec";
+
+/**
+ * The argument for dune to build a file.
+ * Used to build a test runner.
+ */
+export const duneBuildArg = "build";
 
 /**
  * The argument to pass to dune to run all known tests.
@@ -119,6 +134,24 @@ export const runnerExeGlob = "**/inline_test_runner_*.exe";
  * The suffix for test runner executables.
  */
 export const exeSuffix = ".exe";
+
+/**
+ * Return the relative path to the test runner of the given library.
+ * @param libDir The relative path to the libraries sources.
+ * @param libName The name of the library the test runner is build for.
+ * @returns The relative path of the test runner.
+ */
+export function fullRunnerPath(libDir: string, libName: string) {
+    return buildDirRoot.concat(
+        "/" +
+            libDir +
+            "/." +
+            libName +
+            ".inline-tests/inline_test_runner_" +
+            libName +
+            exeSuffix
+    );
+}
 
 /**
  ******************************************************************************
