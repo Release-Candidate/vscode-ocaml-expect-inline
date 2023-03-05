@@ -20,7 +20,7 @@ This extension lets you run OCaml [PPX Expect](https://github.com/janestreet/ppx
   - [Installation](#installation)
   - [Q \& A](#q--a)
     - [Q: What do the groups in the Test Explorer view mean?](#q-what-do-the-groups-in-the-test-explorer-view-mean)
-    - [Q: A test has been added, how can I add that to the Test Explorer?](#q-a-test-has-been-added-how-can-i-add-that-to-the-test-explorer)
+    - [Q: How can I (re-) discover all tests?](#q-how-can-i-re--discover-all-tests)
     - [Q: Where can I see the output of the test run(s)?](#q-where-can-i-see-the-output-of-the-test-runs)
     - [Q: What does the red circle with a point in the middle mean?](#q-what-does-the-red-circle-with-a-point-in-the-middle-mean)
     - [Q: Where can I see the log of the extension?](#q-where-can-i-see-the-log-of-the-extension)
@@ -34,14 +34,20 @@ This extension lets you run OCaml [PPX Expect](https://github.com/janestreet/ppx
 - uses dune to compile and run the tests
 - support for expect PPX tests and inline PPX tests
 - filtering of tests by name
-- parses the test list output of the test runners to fill the Test Explorer view: faster than grepping every source file for test cases and the test tree view is consistent with the test runners
+- parses the test list output of the test runners to fill the Test Explorer view: the test tree view is consistent with the test runners
+- parses OCaml source files on open and save for new, updated or deleted tests
+- configurable test discovery on startup: if `Expectppx: Discover On Startup` is set to `false` no tests are run on startup, tests are only run by explicitly running tests or pressing the `Refresh Tests` button.
 - support for multiple workspaces
+- retries running dune if another instance has locked the project until dune can acquire the lock
 - Uses VS Code's native Test Explorer (no additional extension needed)
+
+![Animation of adding a test](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/add_test.gif)
 
 ### Drawbacks
 
 - needs dune
-- when running tests, every test is run on its own, sequentially (I do not collect the tests to run and dune does not allow more than one running instance in the same directory/workspace)
+- test discovery can be slow, because all tests of all test runners have to be run.
+- when running tests, every test is run on its own, sequentially
 - Uses VS Code's native Test Explorer UI
 
 ## Getting started
@@ -50,7 +56,7 @@ This extension lets you run OCaml [PPX Expect](https://github.com/janestreet/ppx
 
 - Visual Studio Code version 1.65 (February 2022) or higher
 - [PPX Expect](https://github.com/janestreet/ppx_expect) or [PPX Inline Test](https://github.com/janestreet/ppx_inline_test)
-- [Dune](https://dune.build/) the extension uses Dune to build and run the test runners.
+- [Dune](https://dune.build/): the extension uses Dune to build and run the test runners.
 
 **Attention:** you must be in a trusted workspace. Tests (test runners) can execute arbitrary code, so you do **not** want to run them in untrusted directories!
 
@@ -70,11 +76,11 @@ Either
 
 A: Every workspace folder in the current project has it's own node, `Workspace: WORKSPACE_NAME`. If the project is a single workspace, only one of these exists. A group `Expect and Inline Tests` containing all inline PPX and expect PPX tests. In these subtrees the test cases are grouped by filename.
 
-#### Q: A test has been added, how can I add that to the Test Explorer?
+#### Q: How can I (re-) discover all tests?
 
 ![Animation of the Refresh Tests button](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/refresh_tests.gif)
 
-A: Push the Refresh Tests button in the upper right of the Test Explorer view or run any test case to re-discover all tests in the same workspace.
+A: Push the Refresh Tests button in the upper right of the Test Explorer view.
 
 #### Q: Where can I see the output of the test run(s)?
 
@@ -83,7 +89,7 @@ A: You can either click the `Show Output` button in the upper right corner of th
 click on `Go To Test` to the right of a failed test in the test explorer and then `Peek Error` or `Peek Test Output`
 ![Peek Error or Peek Test Output](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/peek_error.png)
 or hover over the [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) output in the source file - this preview is too narrow, so the test output is mangled.
-![HOver over the Error Lens text](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/hover_error_lens.png)
+![Hover over the Error Lens text](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/hover_error_lens.png)
 
 #### Q: What does the red circle with a point in the middle mean?
 

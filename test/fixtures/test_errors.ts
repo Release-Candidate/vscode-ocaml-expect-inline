@@ -264,6 +264,68 @@ export const expectError2Object = [
 ];
 
 /**
+ * Expect error with an empty 'expect' value.
+ */
+export const expectError3 = `File "lib/interp_common.ml", line 34, characters 0-104: Add this (0.001 sec)
+------ /Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml
+++++++ /Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml.corrected
+File "/Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml", line 36, characters 0-1:
+ |
+ |(*******************************************************************************
+ |    Some tests. *)
+ |
+ |let%test "parse true" = true (*Bool true = parse "true"*)
+ |let%test_unit _ = ignore (parse "true")
+ |let%test "parse false" = true (*Bool false = parse "false"*)
+ |let%test "parse not true1" = true (*Unop (Not, Bool true) = parse "not true"*)
+ |let%test "parse not false" = true (*Unop (Not, Bool false) = parse "not false"*)
+ |let%test "parse 1" = true (*Int 1 = parse "1"*)
+ |let%test "parse 1.1" = false (*Float 1.1 = parse "1.1"*)
+ |let%test "parse -1" = true (*Unop (Minus, Int 1) = parse "-1"*)
+ |let%test "parse -1.1" = false (*Unop (Minus, Float 1.1) = parse "-1.1"*)
+ |
+ |let%expect_test "Add this" =
+ |  Stdio.Out_channel.output_string Stdio.stdout "Add this";
+-|  [%expect {||}]
++|  [%expect {| Add this |}]
+ |
+ |let%expect_test "Expect -1.1" =
+ |  Stdio.Out_channel.output_string Stdio.stdout "-1.1";
+ |  [%expect {|-1.1|}]
+ |
+ |let%test "parse 11+11" = true (*Binop (Add, Int 11, Int 11) = parse "11+11"*)
+ |
+ |let%test "parse not true" = true
+ | (* Binop (Add, Float 21., Float 21.2) = parse "21.+21.2"*)
+ |
+ |let%test "parse 11-11" = true (*Binop (Subtr, Int 11, Int 11) = parse "11-11"*)
+ |
+ |let%test_unit "parse 21.-21.2" =
+ |  (*Binop (Subtr, Float 21., Float 21.2) = parse "21.-21.2"*)
+ |   [%test_result: int] 5 ~expect:4
+ |
+`;
+
+/**
+ * The result of parsing `expectError3`.
+ */
+export const expectError3Object = [
+    {
+        name: "lib/interp_common.ml",
+        tests: [
+            {
+                line: 34,
+                name: "Add this",
+                startCol: 0,
+                endCol: 104,
+                actual: "Add this",
+                expected: "",
+            },
+        ],
+    },
+];
+
+/**
  * The errors are:
  * suite: 'AlOcaml', group: 'Big Step tests', id: 25, name: 'let ... if ... 2.'.
  * suite: 'AlOcaml', group: 'Big Step tests', id: 26, name: 'comment should be ign...'.

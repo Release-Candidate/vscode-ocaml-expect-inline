@@ -8,7 +8,7 @@
 
 ## What does the extension do?
 
-On starting the extension - see `activationEvents` in [./package.json](./package.json) and function `activate` in [./src/extension.ts](./src/extension.ts):
+On starting the extension - see `activationEvents` in [./package.json](./package.json) and function `activate` in [./src/extension.ts](./src/extension.ts), if `Expectppx: Discover On Startup` is `true` (if it is `false`, do nothing):
 
 - add, update or remove tests to Test Explorer's test tree for every existing workspace (folder) in the current workspace:
 
@@ -29,6 +29,14 @@ If a user runs a test - see function `runHandler` in [./src/run_tests.ts](./src/
   - parse the output of the test
   - if a test failed, set the 'test message' to the output of the failed test
 
+If a source file has been opened or saved - see function `parseTextDocument` in file [./src/parse_source.ts](./src/parse_source.ts):
+
+- parse the source file for a list of tests
+- check the parent directories of the source file for a dune configuration file `dune`
+- parse the dune configuration file for a library definition
+- set the path to the test runner for this library and source file
+- add, update or remove tests in the Test Explorer's tree view
+
 ## Setup
 
 - install [yarn](https://yarnpkg.com/getting-started/install).
@@ -41,6 +49,7 @@ If a user runs a test - see function `runHandler` in [./src/run_tests.ts](./src/
 - [./src/extension.ts](./src/extension.ts) - the main entry point of the extension
 - [./src/list_tests.ts](./src/list_tests.ts) - parse and generate the list of test cases / tree
 - [./src/run_tests.ts](./src/run_tests.ts) - run tests
+- [./src/parse_source.ts](./src/parse_source.ts) - parse an OCaml source file for tests
 - [./src/constants.ts](./src/constants.ts) - all constants except for regexps, which are located in [./src/parsing.ts](./src/parsing.ts)
 - [./src/extension_helpers.ts](./src/extension_helpers.ts) - all other functions that didn't fit in another file
 - [./src/osInteraction.ts](./src/osInteraction.ts) - I/O: run commands, read files, ...

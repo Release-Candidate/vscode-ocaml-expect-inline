@@ -1,18 +1,24 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "../OCaml-Interp"
-		}
-	],
-	"settings": {
-		"cSpell.words": [
-			"expectppx",
-			"interp",
-			"opam",
-			"VSIX"
-		]
-	}
+    "folders": [
+        {
+            "path": "."
+        },
+        {
+            "path": "../OCaml-Interp"
+        }
+    ],
+    "settings": {
+        "cSpell.words": [
+            "Binop",
+            "expectppx",
+            "interp",
+            "lexbuf",
+            "opam",
+            "Sedlexing",
+            "sprintf",
+            "Subtr",
+            "Unop",
+            "VSIX"
+        ]
+    }
 }

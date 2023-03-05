@@ -117,7 +117,7 @@ const testExceptionRegex =
  * - `rec` - actual value
  */
 const testExpectRegex =
-    /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):?\s*?(?<name>.*?)\s*(?:\([\p{N}.]+\s+sec\))?$.*?-\|.*?\[%expect\s+\{\|(?<exp>.*?)\|\}\].*?\+\|.*?\[%expect\s+\{\|(?<rec>.*?)\|\}\]/gmsu;
+    /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):?\s*?(?<name>.*?)\s*(?:\([\p{N}.]+\s+sec\))?$.*?-\|.*?\[%expect\s+\{\|\s*(?<exp>.*?)\s*\|\}\].*?\+\|.*?\[%expect\s+\{\|\s*(?<rec>.*?)\s*\|\}\]/gmsu;
 
 /**
  * Error message of the test runner if no matching tests to run have been found.
@@ -421,7 +421,7 @@ function listMatchToObject(match: RegExpMatchArray) {
  * @returns The `expected` part of a test failure.
  */
 function getExpected(match: RegExpMatchArray) {
-    return match.groups?.exp ? match.groups.exp : "";
+    return match.groups?.exp === undefined ? undefined : match.groups.exp;
 }
 
 /**
@@ -430,7 +430,7 @@ function getExpected(match: RegExpMatchArray) {
  * @returns The `actual` part of a test failure.
  */
 function getActual(match: RegExpMatchArray) {
-    return match.groups?.rec ? match.groups.rec : "";
+    return match.groups?.rec === undefined ? undefined : match.groups.rec;
 }
 
 /**
@@ -568,10 +568,10 @@ function convertTestObject(test: TestTypeIn) {
     t.line = test.line;
     t.startCol = test.startCol;
     t.name = test.name;
-    if (test.expected) {
+    if (test.expected !== undefined) {
         t.expected = test.expected;
     }
-    if (test.actual) {
+    if (test.actual !== undefined) {
         t.actual = test.actual;
     }
     return t;
