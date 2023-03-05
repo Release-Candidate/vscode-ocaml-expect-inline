@@ -12,6 +12,7 @@
 This extension lets you run OCaml [PPX Expect](https://github.com/janestreet/ppx_expect) and [PPX Inline Test](https://github.com/janestreet/ppx_inline_test) with the (native) Test Explorer UI.
 
 ![Animation of a test run](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/run_tests.gif)
+![Animation of adding a test](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/add_test.gif)
 
 - [Features and drawbacks](#features-and-drawbacks)
   - [Drawbacks](#drawbacks)
@@ -40,8 +41,6 @@ This extension lets you run OCaml [PPX Expect](https://github.com/janestreet/ppx
 - support for multiple workspaces
 - retries running dune if another instance has locked the project until dune can acquire the lock
 - Uses VS Code's native Test Explorer (no additional extension needed)
-
-![Animation of adding a test](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/add_test.gif)
 
 ### Drawbacks
 
@@ -74,7 +73,7 @@ Either
 
 ![The Test Explorer's tree view](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/treeview.png)
 
-A: Every workspace folder in the current project has it's own node, `Workspace: WORKSPACE_NAME`. If the project is a single workspace, only one of these exists. A group `Expect and Inline Tests` containing all inline PPX and expect PPX tests. In these subtrees the test cases are grouped by filename.
+A: Every workspace folder in the current project has it's own node, `Workspace: WORKSPACE_NAME`. If the project is a single workspace, only one of these exists. A group `Expect and Inline Tests` containing all inline PPX and expect PPX tests. In these subtrees the test cases are grouped by filename. If you are using another Test Explorer extension, like [Alocotest Test Explorer](https://marketplace.visualstudio.com/items?itemName=release-candidate.vscode-ocaml-alcotest-test-adapter), the workspace nodes are contained in a root node of each testing extension - `Expect and Inline PPX Tests` (Alcotest tests in `Alcotest Tests`)
 
 #### Q: How can I (re-) discover all tests?
 
