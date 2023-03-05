@@ -18,6 +18,7 @@ import * as vscode from "vscode";
 
 /**
  * Run or cancel running tests.
+ *
  * This is called whenever the user wants to run or cancel tests.
  * @param env All needed objects are contained in this environment.
  * @param request The actual run request.
@@ -32,6 +33,7 @@ export async function runHandler(
     const toDelete: vscode.TestItem[] = [];
     const run = env.controller.createTestRun(request);
     const tests = t.testList(request, env.controller, toDelete);
+    tests.forEach((ti) => run.started(ti));
 
     for (const test of tests) {
         if (!token.isCancellationRequested) {
@@ -43,13 +45,10 @@ export async function runHandler(
                 testData: env.testData,
             };
             passEnv.run = run;
-
-            run.started(test);
             // eslint-disable-next-line no-await-in-loop
             await runSingleTest(passEnv, test);
         }
     }
-
     run.end();
 }
 
@@ -91,7 +90,7 @@ async function runSingleTest(env: h.Env, test: vscode.TestItem) {
  * Parse a test and set the test state.
  * Including failure location in the source code.
  * @param env The environment needed for the parsing.
- * @param data The data to parse and construct the test result.
+ * @param {any} data The data to parse and construct the test result.
  */
 // eslint-disable-next-line max-statements, max-lines-per-function
 async function parseTestResult(
@@ -194,7 +193,6 @@ function setRunnerError(env: h.Env, msg: string, test: vscode.TestItem) {
  * Return a `TestMessage` object filled with the information of the failed
  * test.
  * @param data The needed data.
- * @param errElem The test object of the test that failed.
  * @returns A `TestMessage` object filled with the information of the failed
  * test.
  */

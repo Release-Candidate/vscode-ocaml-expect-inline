@@ -46,14 +46,27 @@ export async function parseTextDocument(
     for (const parent of parents) {
         if (
             // eslint-disable-next-line no-await-in-loop
-            await hasFoundDune(env, { relPath, parent, sanitizedTests, source })
+            await hasAddedTests(env, {
+                relPath,
+                parent,
+                sanitizedTests,
+                source,
+            })
         ) {
             return;
         }
     }
 }
 
-async function hasFoundDune(
+/**
+ * Return `true` if we have found a dune file containing a library definition
+ * and the tests have been added to the Test Explorer's tree.
+ * @param env The extension's environment.
+ * @param data The needed data.
+ * @returns `true` if we have found a dune file containing a library definition.
+ * `false` else.
+ */
+async function hasAddedTests(
     env: h.Env,
     data: {
         relPath: { root: vscode.WorkspaceFolder; path: string };
@@ -76,7 +89,7 @@ async function hasFoundDune(
             env.outChannel.appendLine(
                 `Found library "${libName}" in dune file ${duneFile.path}`
             );
-            await foundLibrary(env, {
+            await addTests(env, {
                 relPath: data.relPath,
                 parent: data.parent,
                 sanitizedTests: data.sanitizedTests,
@@ -89,7 +102,12 @@ async function hasFoundDune(
     return false;
 }
 
-async function foundLibrary(
+/**
+ * Add all tests to the Test Explorer's tree.
+ * @param env The extension's environment.
+ * @param data The needed data.
+ */
+async function addTests(
     env: h.Env,
     data: {
         relPath: { root: vscode.WorkspaceFolder; path: string };
@@ -131,6 +149,15 @@ async function foundLibrary(
     );
 }
 
+/**
+ * Return the three top nodes of the Test Explorer tree:
+ * `{ workspaceItem, suiteItem, groupItem }`.
+ * If they do not exist, create them.
+ * @param env The extension's environment.
+ * @param relPath The relative path to the source file.
+ * @returns The three top nodes of the Test Explorer tree:
+ * `{ workspaceItem, suiteItem, groupItem }`.
+ */
 function getOrCreateParents(
     env: h.Env,
     relPath: { root: vscode.WorkspaceFolder; path: string }

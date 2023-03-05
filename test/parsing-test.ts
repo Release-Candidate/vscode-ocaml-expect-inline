@@ -260,7 +260,32 @@ mocha.describe("Parsing Functions", () => {
         mocha.it("No test found msg 2 -> true", () => {
             chai.assert.isTrue(
                 parse.noTestsFound(testErrors.noTestsFound2),
-                "noTestsFoun2 -> true"
+                "noTestsFound2 -> true"
+            );
+        });
+    });
+    //==========================================================================
+    mocha.describe("isDuneLocked", () => {
+        mocha.it("Empty string -> false", () => {
+            chai.assert.isFalse(
+                parse.isDuneLocked(""),
+                "Empty string -> false"
+            );
+        });
+        mocha.it("Some string -> false", () => {
+            chai.assert.isFalse(
+                parse.isDuneLocked(
+                    "hasdjkf dune sahfdj build ashjkl lock.\ndirectory."
+                ),
+                "Empty string -> false"
+            );
+        });
+        mocha.it("Locked -> true", () => {
+            chai.assert.isTrue(
+                parse.isDuneLocked(
+                    "Error: A running dune (pid: 25672) instance has locked the build directory.\nIf this is not the case, please delete _build/.lock"
+                ),
+                "Locked -> true"
             );
         });
     });

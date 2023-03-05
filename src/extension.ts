@@ -26,7 +26,7 @@ import * as vscode from "vscode";
  * `Activation Events` are configured in `package.json`, in the
  * `activationEvents` field.
  *
- * @param _context The `vscode.ExtensionContext` to use.
+ * @param context The `vscode.ExtensionContext` to use.
  */
 export async function activate(context: vscode.ExtensionContext) {
     const outChannel = vscode.window.createOutputChannel(c.outputChannelName);

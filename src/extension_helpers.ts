@@ -120,7 +120,7 @@ export function workspaceFolders() {
 
 /**
  * Return the root and relative path to a workspace root of `uri`.
- * @param absPath The absolute path to make relative to `root`
+ * @param uri The absolute path to make relative to `root`
  * @returns The relative path of `uri` in `path`, the root in `root`.
  */
 export function toRelativePath(uri: vscode.Uri) {

@@ -52,6 +52,12 @@ export type Output = {
 export function getListParentDirs(relPath: string) {
     return addParent(relPath, []);
 
+    /**
+     * Add the parent of `dir` to the list `list` and return it.
+     * @param dir The directory which's parent should be added to the list.
+     * @param list The list to add the parent of `dir` to.
+     * @returns `list` with the parent of `dir` added to it.
+     */
     function addParent(dir: string, list: string[]) {
         if (dir !== ".") {
             const parent = path.dirname(dir);
@@ -84,6 +90,11 @@ export async function filterExistingDirs(
     const statsAndPaths: [PromiseSettledResult<vscode.FileStat>, string][] =
         stats.map((e, idx) => [e, dirs[idx]]);
 
+    /**
+     * Return `true` if `f` is a directory or link.
+     * @param f The file type to check.
+     * @returns `true` if `f` is a directory or link.
+     */
     function filterDirs(f: PromiseSettledResult<vscode.FileStat>) {
         return (
             f.status === "fulfilled" &&
@@ -220,6 +231,44 @@ export async function runCommand(
 }
 
 /**
+ * This is a wrapper around `runCommand`, to retry running dune if another dune
+ * process holds the lock file.
+ * @param root The current working directory to use for dune.
+ * @param args The command line arguments to pass to dune.
+ * @param sleepTime The time to sleep in seconds between each successive try of
+ * acquiring the dune lock.
+ * @returns The output of the dune command.
+ */
+async function runDuneCommand(
+    root: vscode.WorkspaceFolder,
+    args: string[],
+    sleepTime: number
+): Promise<Output> {
+    const out = await runCommand(root, c.duneCmd, args);
+    if (out.stderr) {
+        if (parse.isDuneLocked(out.stderr)) {
+            // eslint-disable-next-line no-magic-numbers
+            await sleep(sleepTime * 1000);
+            return runDuneCommand(root, args, sleepTime);
+        }
+    } else {
+        return out;
+    }
+
+    /**
+     * Sleep for `time` milliseconds.
+     * @param time The time in ms until this promise resolves.
+     */
+    function sleep(time: number) {
+        return new Promise<void>((resolve) => {
+            setTimeout(resolve, time);
+        });
+    }
+
+    return out;
+}
+
+/**
  * Build the test runner for the library `libName` which sources are contained
  * in `libDir`.
  * @param root The current working directory for the dune command.
@@ -232,10 +281,12 @@ export async function runDuneBuild(
     libDir: string,
     libName: string
 ) {
-    return runCommand(root, c.duneCmd, [
-        c.duneBuildArg,
-        path.normalize(c.fullRunnerPath(libDir, libName)),
-    ]);
+    return runDuneCommand(
+        root,
+        [c.duneBuildArg, path.normalize(c.fullRunnerPath(libDir, libName))],
+        // eslint-disable-next-line no-magic-numbers
+        3
+    );
 }
 
 /**
@@ -252,14 +303,19 @@ export async function runRunnerListDune(
     root: vscode.WorkspaceFolder,
     runner: string
 ) {
-    return runCommand(root, c.duneCmd, [
-        c.duneExecArg,
-        runner,
-        c.duneEndArgs,
-        c.runnerLibArg,
-        parse.getLibrary(runner),
-        c.runnerListOption,
-    ]);
+    return runDuneCommand(
+        root,
+        [
+            c.duneExecArg,
+            runner,
+            c.duneEndArgs,
+            c.runnerLibArg,
+            parse.getLibrary(runner),
+            c.runnerListOption,
+        ],
+        // eslint-disable-next-line no-magic-numbers
+        3
+    );
 }
 
 /**
@@ -267,9 +323,7 @@ export async function runRunnerListDune(
  * using dune and return its output.
  * Set `root` as the working directory of the command.
  * `{ stdout; stderr; error }` is returned, see {@link Output}.
- * @param root The current working directory for the dune command.
- * @param runner The path to the runner to execute.
- * @param tests The names of the tests to run.
+ * @param data The command line data needed to run tests.
  * @returns The output of the test runner.
  */
 export async function runRunnerTestsDune(data: {
@@ -278,16 +332,21 @@ export async function runRunnerTestsDune(data: {
     library: string;
     tests: string[];
 }) {
-    return runCommand(data.root, c.duneCmd, [
-        c.duneExecArg,
-        data.runner,
-        c.duneEndArgs,
-        c.runnerLibArg,
-        data.library,
-        c.runnerListOption,
-        c.runnerTestArg,
-        ...data.tests,
-    ]);
+    return runDuneCommand(
+        data.root,
+        [
+            c.duneExecArg,
+            data.runner,
+            c.duneEndArgs,
+            c.runnerLibArg,
+            data.library,
+            c.runnerListOption,
+            c.runnerTestArg,
+            ...data.tests,
+        ],
+        // eslint-disable-next-line no-magic-numbers
+        3
+    );
 }
 
 /**
@@ -296,7 +355,8 @@ export async function runRunnerTestsDune(data: {
  * @returns The output of `dune test` called in the directory `root`.
  */
 export async function runDuneTests(root: vscode.WorkspaceFolder) {
-    return runCommand(root, c.duneCmd, [c.duneAllTestArg]);
+    // eslint-disable-next-line no-magic-numbers
+    return runDuneCommand(root, [c.duneAllTestArg], 3);
 }
 
 /**
@@ -323,7 +383,8 @@ export async function checkDune(root: vscode.WorkspaceFolder): Promise<Output> {
         stdout: duneVersion,
         stderr: duneStderr,
         error: cmdError,
-    } = await runCommand(root, c.duneCmd, [c.duneVersionArg]);
+        // eslint-disable-next-line no-magic-numbers
+    } = await runDuneCommand(root, [c.duneVersionArg], 3);
     if (cmdError) {
         return {
             error: `Error calling ${c.duneCmd} in ${root.uri.path}, can't use dune! Error message: """${cmdError}"""`,

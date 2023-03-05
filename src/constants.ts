@@ -44,6 +44,12 @@ export const runProfileLabel = "Run PPX test";
  */
 export const inlineTestsLabel = "Expect and Inline Tests";
 
+/**
+ * Return the visible name of the workspace.
+ * In the format: `Workspace: ID`.
+ * @param id The id of the workspace.
+ * @returns The visible name of the workspace.
+ */
 export function workspaceLabel(id: string) {
     return `Workspace: ${id}`;
 }

@@ -36,6 +36,9 @@ const ansiRegexp = /\x1b\[[0-9;]*m/gu;
 const versionRegex =
     /^[\s]*[vV]?(?:ersion)?\s*(?<version>[\p{N}][\p{N}\p{P}~]*)[\s]*$/mu;
 
+const duneLockError =
+    /^\s*Error:\s+.*?dune\s+\(.*?\).*?locked.*?build\s+directory.*$\n^.*delete.*\.lock/msu;
+
 /**
  * Regex to parse dune library definition to get the name of the library,
  * stored in group `name`.
@@ -157,6 +160,17 @@ export function isCompileError(s: string) {
 }
 
 /**
+ * Return `true` if the given output (should be on `stderr`) matches the
+ * 'another dune process holds the lock' error message.
+ * @param s The dune output (on `stderr`) to parse.
+ * @returns `true` if the given output (should be on `stderr`) matches the
+ * 'another dune process holds the lock' error message. `false` else.
+ */
+export function isDuneLocked(s: string) {
+    return Boolean(s.match(duneLockError));
+}
+
+/**
  * Remove ANSI color sequences from the string `s`.
  * @param s The string to sanitize.
  * @returns The string `s` with removed ANSI color sequences.
@@ -227,7 +241,7 @@ export function parseTextForTests(text: string) {
  * `{ name: "", loc: { line: 0, col: 0, endLine: 0, endCol: 0 } }` is
  * returned.
  * Require: the match `match` shall define the match group `name`.
- * @param r The match, must contain a match group `name`.
+ * @param match The match, must contain a match group `name`.
  * @param text The text to search the string in.
  * @returns The position of `match` in `text`, as line number and column
  * number. The end of the match is returned in the fields `endLine` and
@@ -321,7 +335,7 @@ export function parseTestErrors(s: string) {
  * by group name.
  * @param r The regexp to use to parse ethe string `s`.
  * @param s The string to parse.
- * @param matchToObject: Function to convert the match object to a test oject.
+ * @param matchToObject Function to convert the match object to a test oject.
  * @returns A list of test objects `{ group, ... }`
  * sorted by `group`.
  */
