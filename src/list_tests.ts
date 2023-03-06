@@ -106,7 +106,6 @@ async function addPPXTests(
         runnerPaths: justBuildPaths,
         root,
         workspaceItem,
-        suiteLabel: c.inlineTestsLabel,
     });
 }
 
@@ -124,7 +123,6 @@ async function generateTestList(
         runnerPaths: string[];
         root: vscode.WorkspaceFolder;
         workspaceItem: vscode.TestItem;
-        suiteLabel: string;
     }
 ) {
     const toDelete: vscode.TestItem[] = [];
@@ -142,7 +140,6 @@ async function generateTestList(
                 // eslint-disable-next-line @typescript-eslint/no-extra-parens, no-await-in-loop
                 ...(await parseTestListOutput(env, {
                     root: data.root,
-                    suiteLabel: data.suiteLabel,
                     workspaceItem: data.workspaceItem,
                     listOutput: out.stdout,
                     rPath,
@@ -166,28 +163,21 @@ async function parseTestListOutput(
     data: {
         root: vscode.WorkspaceFolder;
         workspaceItem: vscode.TestItem;
-        suiteLabel: string;
         listOutput: string;
         rPath: string;
     }
 ) {
-    const suiteItem = getTestItem({
-        controller: env.controller,
-        parent: data.workspaceItem,
-        id: data.suiteLabel,
-        label: data.suiteLabel,
-    });
     const toDelete: vscode.TestItem[] = [];
     const groups = p.parseTestList(data.listOutput);
 
-    toDelete.push(...deleteNonExistingGroups(suiteItem, groups));
+    toDelete.push(...deleteNonExistingGroups(data.workspaceItem, groups));
 
     for (const group of groups) {
         // eslint-disable-next-line no-await-in-loop
         const sourcePath = await io.findSourceOfTest(data.root, group.name);
         const groupItem = getTestItem({
             controller: env.controller,
-            parent: suiteItem,
+            parent: data.workspaceItem,
             id: group.name,
             label: group.name,
             uri: sourcePath,
@@ -210,26 +200,26 @@ async function parseTestListOutput(
  * been deleted and delete these groups.
  * That is, the group is not in the list of groups but is a children of the
  * suite node.
- * @param suiteItem The test suite the test belong to.
+ * @param workspaceItem The workspace node the test belong to.
  * @param groups The list of groups to check.
  * @returns The list of `TestItems` that have been deleted from the Test
  * Explorer tree.
  */
 function deleteNonExistingGroups(
-    suiteItem: vscode.TestItem,
+    workspaceItem: vscode.TestItem,
     groups: { name: string; tests: p.TestType[] }[]
 ) {
-    const suiteGroups: vscode.TestItem[] = [];
-    suiteItem.children.forEach((e) => suiteGroups.push(e));
-    const toDelete = suiteGroups.filter(
+    const workspaceGroup: vscode.TestItem[] = [];
+    workspaceItem.children.forEach((e) => workspaceGroup.push(e));
+    const toDelete = workspaceGroup.filter(
         (e) => !groups.find((v) => v.name === e.id)
     );
 
     toDelete.forEach((e) => {
         e.children.forEach((ch) => {
-            suiteItem.children.delete(ch.id);
+            workspaceItem.children.delete(ch.id);
         });
-        suiteItem.children.delete(e.id);
+        workspaceItem.children.delete(e.id);
     });
 
     return toDelete;

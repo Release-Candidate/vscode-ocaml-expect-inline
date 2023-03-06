@@ -180,9 +180,7 @@ export function testItemsToWorkspaces(items: readonly vscode.TestItem[]) {
      * @returns The workspaces containing the tests.
      */
     function onlyWorkspaces(i: vscode.TestItem) {
-        if (i.parent?.parent?.parent) {
-            return i.parent.parent.parent;
-        } else if (i.parent?.parent) {
+        if (i.parent?.parent) {
             return i.parent.parent;
         } else if (i.parent) {
             return i.parent;

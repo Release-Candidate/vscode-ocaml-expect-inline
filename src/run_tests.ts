@@ -22,7 +22,7 @@ import * as vscode from "vscode";
  * This is called whenever the user wants to run or cancel tests.
  * @param env All needed objects are contained in this environment.
  * @param request The actual run request.
- * @param token The `CancellationToken`. Whether the user want's to cancel the
+ * @param token The `CancellationToken`. Whether the user wants to cancel the
  * test runs.
  */
 export async function runHandler(

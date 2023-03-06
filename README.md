@@ -23,7 +23,8 @@ This extension lets you run OCaml [PPX Expect](https://github.com/janestreet/ppx
     - [Q: What do the groups in the Test Explorer view mean?](#q-what-do-the-groups-in-the-test-explorer-view-mean)
     - [Q: How can I (re-) discover all tests?](#q-how-can-i-re--discover-all-tests)
     - [Q: Where can I see the output of the test run(s)?](#q-where-can-i-see-the-output-of-the-test-runs)
-    - [Q: What does the red circle with a point in the middle mean?](#q-what-does-the-red-circle-with-a-point-in-the-middle-mean)
+    - [Q: How can I change which test extension's tests are run by the `Run Tests` button in the upper right of the Test Explorer?](#q-how-can-i-change-which-test-extensions-tests-are-run-by-the-run-tests-button-in-the-upper-right-of-the-test-explorer)
+    - [Q: What does the red circle with a dot in the middle mean?](#q-what-does-the-red-circle-with-a-dot-in-the-middle-mean)
     - [Q: Where can I see the log of the extension?](#q-where-can-i-see-the-log-of-the-extension)
 - [Configuration](#configuration)
 - [Changes](#changes)
@@ -73,7 +74,7 @@ Either
 
 ![The Test Explorer's tree view](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/treeview.png)
 
-A: Every workspace folder in the current project has it's own node, `Workspace: WORKSPACE_NAME`. If the project is a single workspace, only one of these exists. A group `Expect and Inline Tests` containing all inline PPX and expect PPX tests. In these subtrees the test cases are grouped by filename. If you are using another Test Explorer extension, like [Alocotest Test Explorer](https://marketplace.visualstudio.com/items?itemName=release-candidate.vscode-ocaml-alcotest-test-adapter), the workspace nodes are contained in a root node of each testing extension - `Expect and Inline PPX Tests` (Alcotest tests in `Alcotest Tests`)
+A: Every workspace folder in the current project has it's own node, `Workspace: WORKSPACE_NAME`. If the project is a single workspace, only one of these exists. Below the workspace node the test cases are grouped by filename. If you are using another Test Explorer extension, like [Alocotest Test Explorer](https://marketplace.visualstudio.com/items?itemName=release-candidate.vscode-ocaml-alcotest-test-adapter), the workspace nodes are contained in a root node of each testing extension - `Expect and Inline PPX Tests` (Alcotest tests in `Alcotest Tests`)
 
 #### Q: How can I (re-) discover all tests?
 
@@ -90,7 +91,13 @@ click on `Go To Test` to the right of a failed test in the test explorer and the
 or hover over the [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) output in the source file - this preview is too narrow, so the test output is mangled.
 ![Hover over the Error Lens text](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/hover_error_lens.png)
 
-#### Q: What does the red circle with a point in the middle mean?
+#### Q: How can I change which test extension's tests are run by the `Run Tests` button in the upper right of the Test Explorer?
+
+![Set default run profiles](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/run_profiles.png)
+
+A: Click the down arrow to the right of the `Run Tests` button, there you can set the profiles using `Select Default Profile(s)`.
+
+#### Q: What does the red circle with a dot in the middle mean?
 
 ![Compile error](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/compile_error.png)
 A: That means that dune returned an error (not a failed test). Mostly because of code that does not compile.

@@ -150,13 +150,13 @@ async function addTests(
 }
 
 /**
- * Return the three top nodes of the Test Explorer tree:
- * `{ workspaceItem, suiteItem, groupItem }`.
+ * Return the two top nodes of the Test Explorer tree:
+ * `{ workspaceItem, groupItem }`.
  * If they do not exist, create them.
  * @param env The extension's environment.
  * @param relPath The relative path to the source file.
- * @returns The three top nodes of the Test Explorer tree:
- * `{ workspaceItem, suiteItem, groupItem }`.
+ * @returns The two top nodes of the Test Explorer tree:
+ * `{ workspaceItem, groupItem }`.
  */
 function getOrCreateParents(
     env: h.Env,
@@ -169,21 +169,14 @@ function getOrCreateParents(
         uri: relPath.root.uri,
         delete: false,
     });
-    const suiteItem = getOrCreateItem(env, {
-        items: workspaceItem.children,
-        id: c.inlineTestsLabel,
-        label: c.inlineTestsLabel,
-        uri: relPath.root.uri,
-        delete: false,
-    });
     const groupItem = getOrCreateItem(env, {
-        items: suiteItem.children,
+        items: workspaceItem.children,
         id: relPath.path,
         label: relPath.path,
         uri: vscode.Uri.joinPath(relPath.root.uri, relPath.path),
         delete: true,
     });
-    return { workspaceItem, suiteItem, groupItem };
+    return { workspaceItem, groupItem };
 }
 
 /**

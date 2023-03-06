@@ -36,6 +36,9 @@ const ansiRegexp = /\x1b\[[0-9;]*m/gu;
 const versionRegex =
     /^[\s]*[vV]?(?:ersion)?\s*(?<version>[\p{N}][\p{N}\p{P}~]*)[\s]*$/mu;
 
+/**
+ * Regexp to match a lock error message of dune.
+ */
 const duneLockError =
     /^\s*Error:\s+.*?dune\s+\(.*?\).*?locked.*?build\s+directory.*$\n^.*delete.*\.lock/msu;
 

@@ -37,12 +37,7 @@ export const outputChannelName = "Expect and Inline Tests";
 /**
  * The label of the `TestRunProfileKind.Run` test profile.
  */
-export const runProfileLabel = "Run PPX test";
-
-/**
- * The label of root of the inline test tree in the Test Explorer view.
- */
-export const inlineTestsLabel = "Expect and Inline Tests";
+export const runProfileLabel = "Run Expect and Inline PPX tests";
 
 /**
  * Return the visible name of the workspace.
