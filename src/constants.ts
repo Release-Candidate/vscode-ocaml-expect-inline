@@ -55,6 +55,16 @@ export function workspaceLabel(id: string) {
 export const testSourceGlob = "**/*.ml";
 
 /**
+ * Command to run Opam with.
+ */
+export const opamCmd = "opam";
+
+/**
+ * The arguments to pass to the opam command to get the current environment.
+ */
+export const opamEnvArg = ["env"];
+
+/**
  ******************************************************************************
  *  Test runner constants.
  * The test runner's command line is like this:
