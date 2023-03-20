@@ -51,13 +51,18 @@ export async function addTests(
  * @returns The list of `TestItems` that have been deleted from the Test
  * Explorer tree.
  */
+// eslint-disable-next-line max-statements
 async function addWorkspaceTests(env: h.Env, root: vscode.WorkspaceFolder) {
     await setOpamEnv(root, env);
 
     // eslint-disable-next-line @typescript-eslint/no-extra-parens
     if (!(await h.isDuneWorking(root, env))) {
-        vscode.window.showWarningMessage(
-            `Error: Dune command 'dune' is not working in ${root.name}.\nSee the 'Output' window view of 'Alcotest Tests' for details.`
+        vscode.window.showErrorMessage(
+            `Error: Dune command '${c.getCfgDunePath(
+                env.config
+            )}' is not working in ${
+                root.name
+            }.\nSee the 'Output' window view of 'Expect and Inline Tests' for details.`
         );
         return [];
     }
@@ -98,7 +103,9 @@ async function setOpamEnv(root: vscode.WorkspaceFolder, env: h.Env) {
     const opamEnv = await io.opamEnv(root);
     for (const oEnv of opamEnv) {
         process.env[oEnv.name] = oEnv.value;
-        env.outChannel.appendLine(`Adding env: ${oEnv.name} ${oEnv.value}`);
+        env.outChannel.appendLine(
+            `Workspace ${root.name}: adding env: ${oEnv.name} ${oEnv.value}`
+        );
     }
 }
 
@@ -115,15 +122,54 @@ async function addPPXTests(
     root: vscode.WorkspaceFolder,
     workspaceItem: vscode.TestItem
 ) {
-    const inlineRunnerPaths = await io.findFilesRelative(root, c.runnerExeGlob);
-    const justBuildPaths = inlineRunnerPaths.filter(
-        (pa) => !pa.includes(c.sandboxDir)
+    env.outChannel.appendLine(
+        `Workspace ${root.name}: searching for inline test runners ...`
     );
+
+    const inlineRunnerPaths = await io.findFilesRelative(root, c.runnerExeGlob);
+    const justBuildPaths = sanitizeRunnerPaths(env, inlineRunnerPaths);
+    if (!justBuildPaths.length) {
+        env.outChannel.appendLine(
+            `Workspace ${root.name}: no inline test runners found`
+        );
+    }
+    for (const runner of justBuildPaths) {
+        env.outChannel.appendLine(`Found inline runner ${runner}`);
+    }
+
     return generateTestList(env, {
         runnerPaths: justBuildPaths,
         root,
         workspaceItem,
     });
+}
+
+/**
+ * Remove all test runners to exclude and test runner executables in `.sandbox`.
+ * @param env The extension's environment.
+ * @param inlineRunnerPaths The list of inline test runner paths to check.
+ * @returns The list of test runners without the ones to exclude.
+ */
+function sanitizeRunnerPaths(env: h.Env, inlineRunnerPaths: string[]) {
+    const justBuildPaths: string[] = [];
+    const excludePaths = c.getCfgExcludeRunners(env.config);
+
+    // eslint-disable-next-line no-labels
+    outer: for (const incPath of inlineRunnerPaths) {
+        if (incPath.includes(c.sandboxDir)) {
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+        for (const excPath of excludePaths) {
+            if (incPath.endsWith(excPath)) {
+                // eslint-disable-next-line no-labels, no-continue
+                continue outer;
+            }
+        }
+
+        justBuildPaths.push(incPath);
+    }
+    return justBuildPaths;
 }
 
 /**
@@ -134,6 +180,7 @@ async function addPPXTests(
  * @returns The list of `TestItems` that have been deleted from the Test
  * Explorer tree.
  */
+// eslint-disable-next-line max-statements
 async function generateTestList(
     env: h.Env,
     data: {
@@ -142,18 +189,23 @@ async function generateTestList(
         workspaceItem: vscode.TestItem;
     }
 ) {
-    const toDelete: vscode.TestItem[] = [];
+    const groups: { name: string; tests: p.TestType[] }[] = [];
     for (const rPath of data.runnerPaths) {
+        env.outChannel.appendLine(`Starting runner ${rPath}`);
         // eslint-disable-next-line no-await-in-loop
-        const out = await io.runRunnerListDune(data.root, rPath);
+        const out = await io.runRunnerListDune(
+            data.root,
+            c.getCfgDunePath(env.config),
+            rPath
+        );
         env.outChannel.appendLine(
-            `Test runner: ${rPath}\nList of tests:\n${out.stdout}\nStderr: ${
+            `Finished run: ${rPath}\nList of tests:\n${out.stdout}\nStderr: ${
                 out.stderr
             }\nError: ${out.error ? out.error : ""}`
         );
 
         if (out.stdout) {
-            toDelete.push(
+            groups.push(
                 // eslint-disable-next-line @typescript-eslint/no-extra-parens, no-await-in-loop
                 ...(await parseTestListOutput(env, {
                     root: data.root,
@@ -164,6 +216,10 @@ async function generateTestList(
             );
         }
     }
+    const toDelete = deleteNonExistingGroups(data.workspaceItem, groups);
+    for (const del of toDelete) {
+        env.outChannel.appendLine(`Deleting ${del.label} ID: ${del.id}`);
+    }
     return toDelete;
 }
 
@@ -171,8 +227,7 @@ async function generateTestList(
  * Parse the output of the test list and add the test items to the test tree.
  * @param env The environment needed to add the tests.
  * @param data The data needed to add the test item to the tree.
- * @returns The list of `TestItems` that have been deleted from the Test
- * Explorer tree.
+ * @returns The list of tests parsed from the output.
  */
 // eslint-disable-next-line max-statements
 async function parseTestListOutput(
@@ -184,10 +239,7 @@ async function parseTestListOutput(
         rPath: string;
     }
 ) {
-    const toDelete: vscode.TestItem[] = [];
     const groups = p.parseTestList(data.listOutput);
-
-    toDelete.push(...deleteNonExistingGroups(data.workspaceItem, groups));
 
     for (const group of groups) {
         // eslint-disable-next-line no-await-in-loop
@@ -209,7 +261,7 @@ async function parseTestListOutput(
             });
         }
     }
-    return toDelete;
+    return groups;
 }
 
 /**

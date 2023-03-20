@@ -6,6 +6,7 @@
 [![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/Release-Candidate.vscode-ocaml-expect-inline)](https://marketplace.visualstudio.com/items?itemName=release-candidate.vscode-ocaml-expect-inline)
 [![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/Release-Candidate.vscode-ocaml-expect-inline)](https://marketplace.visualstudio.com/items?itemName=release-candidate.vscode-ocaml-expect-inline)
 [![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/Release-Candidate.vscode-ocaml-expect-inline)](https://marketplace.visualstudio.com/items?itemName=release-candidate.vscode-ocaml-expect-inline)
+[![Open VSX Version](https://img.shields.io/open-vsx/v/Release-Candidate/vscode-ocaml-expect-inline)](https://open-vsx.org/extension/Release-Candidate/vscode-ocaml-expect-inline)
 
 ![Expect and Inline logo](./images/inline_ppx_banner.png)
 
@@ -47,6 +48,7 @@ This extension lets you run OCaml [PPX Expect](https://github.com/janestreet/ppx
 
 - needs dune
 - test discovery can be slow, because all tests of all test runners have to be run.
+- retries running dune if another instance has locked the project until dune can acquire the lock - may loop forever.
 - when running tests, every test is run on its own, sequentially
 - Uses VS Code's native Test Explorer UI
 
@@ -64,11 +66,26 @@ This extension lets you run OCaml [PPX Expect](https://github.com/janestreet/ppx
 
 Either
 
-- install the extension directly from the Visual Studio Code Marketplace [Expect and inline  Test Explorer](https://marketplace.visualstudio.com/items?itemName=release-candidate.vscode-ocaml-expect-inline)
+- install the extension directly from the Visual Studio Code Marketplace [Expect and Inline Tests](https://marketplace.visualstudio.com/items?itemName=release-candidate.vscode-ocaml-expect-inline)
+- install the extension directly from the Open VSX Registry [Expect and Inline Tests
+Preview
+](https://open-vsx.org/extension/Release-Candidate/vscode-ocaml-expect-inline)
 - or download the extension from the [latest release at GitHub](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/releases/latest)
 - or build the extension yourself by cloning the [GitHub Repository](https://github.com/Release-Candidate/vscode-ocaml-expect-inline) and running `yarn install` and `yarn package` in the root directory of the cloned repo.
 
 ### Q & A
+
+[What do the groups in the Test Explorer view mean?](#q-what-do-the-groups-in-the-test-explorer-view-mean)
+
+[How can I (re-) discover all tests?](#q-how-can-i-re--discover-all-tests)
+
+[Where can I see the output of the test run(s)?](#q-where-can-i-see-the-output-of-the-test-runs)
+
+[How can I change which test extension's tests are run by the `Run Tests` button in the upper right of the Test Explorer?](#q-how-can-i-change-which-test-extensions-tests-are-run-by-the-run-tests-button-in-the-upper-right-of-the-test-explorer)
+
+[What does the red circle with a dot in the middle mean?](#q-what-does-the-red-circle-with-a-dot-in-the-middle-mean)
+
+[Where can I see the log of the extension?](#q-where-can-i-see-the-log-of-the-extension)
 
 #### Q: What do the groups in the Test Explorer view mean?
 
@@ -111,6 +128,9 @@ A: In the `OUTPUT` tab of the Panel, you have to select the extension named `Exp
 ## Configuration
 
 - `expectppx.discoverOnStartup` - Boolean. Set this to `false` if you do not want to run all expect and inline tests on startup to discover tests. If you want to rediscover all test by running all inline test runners, use the `Refresh Tests` button in the upper right corner of the Test Explorer.
+- `expectppx.discoverInSources` - Boolean. Whether to parse source files on open and save for tests and update the Test Explorer tree. Should be set to `true` if `expectppx.discoverOnStartup` is `false`.
+- `expectppx.dunePath` - Set an absolute path or a path relative to the project root of the Dune executable. Default: `dune` - use the one in the local Opam environment or in `PATH`.
+- `expectppx.excludeRunners` - A list of inline test runner names to be excluded from test discovery an startup or refresh, e.g. because they take too long to finish. E.g. `["inline_test_runner_fsevents_tests.exe"]` to exclude the test runner of the `fsevents_tests` library.
 
 ## Changes
 

@@ -64,6 +64,12 @@
 			"task": "test",
 			"problemMatcher": [],
 			"label": "yarn: test"
+		},
+		{
+			"type": "yarn",
+			"task": "compile",
+			"problemMatcher": [],
+			"label": "yarn: compile"
 		}
 	]
 }

@@ -12,6 +12,7 @@
 
 import * as io from "./osInteraction";
 import * as vscode from "vscode";
+import { getCfgDunePath } from "./constants";
 
 /**
  * Object holding additional data about a `TestItem`.
@@ -198,15 +199,12 @@ export function testItemsToWorkspaces(items: readonly vscode.TestItem[]) {
  * @returns `true`, if the dune command is working in directory `root`, `false`
  * else.
  */
-export async function isDuneWorking(
-    root: vscode.WorkspaceFolder,
-    env: { outChannel: vscode.OutputChannel }
-) {
+export async function isDuneWorking(root: vscode.WorkspaceFolder, env: Env) {
     const {
         stdout: duneStdout,
         stderr: duneStderr,
         error: duneError,
-    } = await io.checkDune(root);
+    } = await io.checkDune(root, getCfgDunePath(env.config));
     if (duneError) {
         env.outChannel.appendLine(duneError);
         return false;

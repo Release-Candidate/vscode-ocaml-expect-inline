@@ -4,7 +4,7 @@
             "path": "."
         },
         {
-            "path": "../OCaml-Interp"
+            "path": "../dune"
         }
     ],
     "settings": {
@@ -19,6 +19,7 @@
             "Subtr",
             "Unop",
             "VSIX"
-        ]
+        ],
+        "expectppx.dunePath": "_opam/bin/dune"
     }
 }

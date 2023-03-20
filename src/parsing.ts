@@ -34,7 +34,7 @@ const ansiRegexp = /\x1b\[[0-9;]*m/gu;
  * The version number is captured in the first group with name `version`.
  */
 const versionRegex =
-    /^[\s]*[vV]?(?:ersion)?\s*(?<version>[\p{N}][\p{N}\p{P}~]*)[\s]*$/mu;
+    /^[\s]*[vV]?(?:ersion)?\s*(?<version>[\p{N}][\p{N}\p{P}~a-z]*)[\s]*$/mu;
 
 /**
  * Regexp to parse the output of `opam env`.
@@ -86,7 +86,7 @@ const testListRegex =
  * - `name`
  */
 const compileError =
-    /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):\s*?(?<name>.*?)\s*Error\s*.*?:/gmsu;
+    /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):\s*?(?<name>^[\p{N}]+\s*\|.*?)\s*Error\s*.*?:/gmsu;
 
 /**
  * Regexp to parse test results for errors.
@@ -124,11 +124,10 @@ const testExceptionRegex =
  * - `start`
  * - `end`
  * - `name`
- * - `exp` - expected value
- * - `rec` - actual value
+ * - `rec` - diff view
  */
 const testExpectRegex =
-    /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):?\s*?(?<name>.*?)\s*(?:\([\p{N}.]+\s+sec\))?$.*?-\|.*?\[%expect\s+\{\|\s*(?<exp>.*?)\s*\|\}\].*?\+\|.*?\[%expect\s+\{\|\s*(?<rec>.*?)\s*\|\}\]/gmsu;
+    /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):?\s*?(?<name>.*?)\s*(?:\([\p{N}.]+\s+sec\))?$.*?(?<rec>-\|.*?\[%expect.*?$(:?\n^[+-]+\|.*?$)+)/gmsu;
 
 /**
  * Error message of the test runner if no matching tests to run have been found.
@@ -357,7 +356,7 @@ export function parseTestErrors(s: string) {
     const expectErrors = parseTestHelper<TestTypeIn>(
         testExpectRegex,
         sanitized,
-        errorMatchToObject
+        expectMatchToObject
     );
     return groupTestHelper(errors.concat(exceptionErrors).concat(expectErrors));
 }
@@ -414,6 +413,23 @@ function errorMatchToObject(match: RegExpMatchArray) {
         endCol: getEndCol(match),
         actual: getActual(match),
         expected: getExpected(match),
+    };
+}
+
+/**
+ * Return an object constructed by the match groups of `match`.
+ * @param match The match object containing match groups `group`, `id`, `name`
+ * `exp` and `rec`.
+ * @returns The object filled with the match groups of `match`.
+ */
+function expectMatchToObject(match: RegExpMatchArray) {
+    return {
+        group: getFileName(match),
+        name: getName(match),
+        line: getLine(match),
+        startCol: getStartCol(match),
+        endCol: getEndCol(match),
+        actual: getActual(match),
     };
 }
 

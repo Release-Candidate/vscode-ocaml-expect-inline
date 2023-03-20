@@ -123,6 +123,13 @@ mocha.describe("Parsing Functions", () => {
                 "v3.6.2 should be valid"
             );
         });
+        mocha.it("3.7.0-181-g4245029 is valid", () => {
+            chai.assert.strictEqual(
+                parse.isValidVersion("3.7.0-181-g4245029"),
+                true,
+                "3.7.0-181-g4245029 should be valid"
+            );
+        });
         mocha.it("Version 3.6.2~9-156_78 is valid", () => {
             chai.assert.strictEqual(
                 parse.isValidVersion("Version 3.6.2~9-156_78"),
@@ -396,6 +403,13 @@ mocha.describe("Parsing Functions", () => {
                 "compilerError3 -> true"
             );
         });
+        mocha.it("Not a compile error -> false", () => {
+            chai.assert.deepEqual(
+                parse.isCompileError(testErrors.noCompileError),
+                false,
+                "noCompileError -> false"
+            );
+        });
         mocha.it("List of tests -> false", () => {
             chai.assert.deepEqual(
                 parse.isCompileError(testLists.normalList),
@@ -472,6 +486,13 @@ mocha.describe("Parsing Functions", () => {
                 parse.parseTestErrors(testErrors.expectError3),
                 testErrors.expectError3Object,
                 "expectError3 -> expectError3Object"
+            );
+        });
+        mocha.it("Failed expect test 4 -> one test", () => {
+            chai.assert.deepEqual(
+                parse.parseTestErrors(testErrors.expectError4),
+                testErrors.expectError4Object,
+                "expectError4 -> expectError4Object"
             );
         });
         mocha.it("Failed test 1 -> one test", () => {

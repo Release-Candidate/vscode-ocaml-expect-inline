@@ -15,6 +15,7 @@ import * as io from "./osInteraction";
 import * as p from "./parsing";
 import * as t from "./list_tests";
 import * as vscode from "vscode";
+import { getCfgDunePath } from "./constants";
 
 /**
  * Run or cancel running tests.
@@ -70,6 +71,7 @@ async function runSingleTest(env: h.Env, test: vscode.TestItem) {
         test.busy = true;
         const out = await io.runRunnerTestsDune({
             root,
+            duneCmd: getCfgDunePath(env.config),
             runner,
             library,
             tests: [`${test.parent?.label}:${test.id}`],

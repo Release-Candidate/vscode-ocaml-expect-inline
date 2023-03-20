@@ -1,5 +1,18 @@
 # OCaml Expect and Inline Test Explorer for Visual Studio Code Changelog
 
+## Version 0.4.0 (2023-03-20)
+
+- New configuration values:
+  - `expectppx.discoverInSources` - Whether to parse source files on open and save for tests and update the Test Explorer tree. Should be set to `true` if `expectppx.discoverOnStartup` is `false`.
+  - `expectppx.dunePath` - Set an absolute path or a path relative to the project root of the Dune executable. Default: `dune` - use the one in the local Opam environment or in `PATH`. See [Issue #3](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/issues/3).
+  - `expectppx.excludeRunners` - A list of inline test runner names to be excluded from test discovery an startup or refresh, e.g. because they take too long to finish.
+- Add a message window to ask for a reload if a configuration value has changed.
+- Update the documentation.
+
+### Bugfixes
+
+- Fix bug when tests from other test runners are deleted on startup or refresh having more than one inline test runner. See [Issue #3](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/issues/3).
+
 ## Version 0.3.0 (2023-03-18)
 
 - Add error message window if `dune` does not work in a workspace.

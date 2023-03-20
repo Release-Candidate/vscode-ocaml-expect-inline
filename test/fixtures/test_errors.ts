@@ -50,6 +50,57 @@ Error: The constructor TypeError expects 2 argument(s),
        but is applied here to 1 argument(s)`;
 
 /**
+ * Not a compile error.
+ */
+export const noCompileError = `File "test/expect-tests/findlib_tests.ml", line 137, characters 0-575 (0.001 sec)
+[0;31m------ [0m[0;1m/Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml[0m
+[0;32m++++++ [0m[0;1m/Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml.corrected[0m
+File "/Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml", line 140, characters 0-1:
+[0;100;30m |[0m              ; add_rules = []
+[0;100;30m |[0m              }
+[0;100;30m |[0m          }
+[0;100;30m |[0m    ; subs = []
+[0;100;30m |[0m    } |}]
+[0;100;30m |[0m
+[0;100;30m |[0mlet conf () =
+[0;100;30m |[0m  Findlib.Config.load
+[0;100;30m |[0m    (Path.Outside_build_dir.relative db_path "../toolchain")
+[0;100;30m |[0m    ~toolchain:"tlc" ~context:"<context>"
+[0;100;30m |[0m  |> Memo.run
+[0;100;30m |[0m  |> Test_scheduler.(run (create ()))
+[0;100;30m |[0m
+[0;100;30m |[0mlet%expect_test _ =
+[0;100;30m |[0m  let conf = conf () in
+[0;100;30m |[0m  print_dyn (Findlib.Config.to_dyn conf);
+[0;41;30m-|[0m[0m[0;2m  [%expect[0m[0m
+[0;41;30m-|[0m[0m[0;31m    {|[0m[0m
+[0;41;30m-|[0m[0m[0;31m    { vars =[0m[0m
+[0;41;30m-|[0m[0m[0;31m        map[0m[0m
+[0;41;30m-|[0m[0m[0;31m          { "FOO_BAR" :[0m[0m
+[0;41;30m-|[0m[0m[0;31m              { set_rules =[0m[0m
+[0;41;30m-|[0m[0m[0;31m                  [ { preds_required = set { "env"; "tlc" }[0m[0m
+[0;41;30m-|[0m[0m[0;31m                    ; preds_forbidden = set {}[0m[0m
+[0;41;30m-|[0m[0m[0;31m                    ; value = "my variable"[0m[0m
+[0;41;30m-|[0m[0m[0;31m                    }[0m[0m
+[0;41;30m-|[0m[0m[0;31m                  ][0m[0m
+[0;41;30m-|[0m[0m[0;31m              ; add_rules = [][0m[0m
+[0;41;30m-|[0m[0m[0;31m              }[0m[0m
+[0;41;30m-|[0m[0m[0;31m          }[0m[0m
+[0;41;30m-|[0m[0m[0;31m    ; preds = set { "tlc" }[0m[0m
+[0;41;30m-|[0m[0m[0;31m    } |}[0m[0;2m];[0m[0m
+[0;42;30m+|[0m[0m  [%expect[0;32m.unreachable[0m];[0m
+[0;41;30m-|[0m[0m[0;2m  print_dyn (Env.to_dyn (Findlib.Config.env conf));[0m[0m
+[0;41;30m-|[0m[0m[0;2m  [%expect[0m[0;31m {| map { "FOO_BAR" : "my variable" }[0m[0;2m |}][0m[0m
+[0;42;30m+|[0m[0m  print_dyn (Env.to_dyn (Findlib.Config.env conf));[0m
+[0;42;30m+|[0m[0m  [%expect[0;32m.unreachable][0m[0m
+[0;42;30m+|[0m[0m[0;32m[@@expect.uncaught_exn {|[0m[0m
+[0;42;30m+|[0m[0m[0;32m  ( "Error: ocamlfind toolchain tlc isn't defined in\\[0m[0m
+[0;42;30m+|[0m[0m[0;32m   \\n/Users/roland/Documents/code/dune/../unit-tests/findlib-db/../toolchain.d\\[0m[0m
+[0;42;30m+|[0m[0m[0;32m   \\n(context: <context>)\\[0m[0m
+[0;42;30m+|[0m[0m[0;32m   \\n")[0m |}][0m
+`;
+
+/**
  * A 'normal' failed inline test.
  */
 export const testError = `File "lib/interp_common.ml", line 22, characters 0-29: parse true (0.000 sec)
@@ -193,8 +244,7 @@ export const expectError1Object = [
                 name: "Expect -1.1",
                 startCol: 0,
                 endCol: 76,
-                actual: "-1.1",
-                expected: "-1.12",
+                actual: "-|  [%expect {|-1.12|}]\n+|  [%expect {|-1.1|}]",
             },
         ],
     },
@@ -256,8 +306,7 @@ export const expectError2Object = [
                 name: "lib/interp_common.ml Line 57",
                 startCol: 0,
                 endCol: 95,
-                actual: "-1.1",
-                expected: "-1.5",
+                actual: "-|  [%expect {|-1.5|}]\n+|  [%expect {|-1.1|}]",
             },
         ],
     },
@@ -318,8 +367,76 @@ export const expectError3Object = [
                 name: "Add this",
                 startCol: 0,
                 endCol: 104,
-                actual: "Add this",
-                expected: "",
+                actual: "-|  [%expect {||}]\n+|  [%expect {| Add this |}]",
+            },
+        ],
+    },
+];
+
+/**
+ * Expect error with an empty 'expect' value.
+ */
+export const expectError4 = `File "test/expect-tests/findlib_tests.ml", line 137, characters 0-575 (0.001 sec)
+[0;31m------ [0m[0;1m/Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml[0m
+[0;32m++++++ [0m[0;1m/Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml.corrected[0m
+File "/Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml", line 140, characters 0-1:
+[0;100;30m |[0m              ; add_rules = []
+[0;100;30m |[0m              }
+[0;100;30m |[0m          }
+[0;100;30m |[0m    ; subs = []
+[0;100;30m |[0m    } |}]
+[0;100;30m |[0m
+[0;100;30m |[0mlet conf () =
+[0;100;30m |[0m  Findlib.Config.load
+[0;100;30m |[0m    (Path.Outside_build_dir.relative db_path "../toolchain")
+[0;100;30m |[0m    ~toolchain:"tlc" ~context:"<context>"
+[0;100;30m |[0m  |> Memo.run
+[0;100;30m |[0m  |> Test_scheduler.(run (create ()))
+[0;100;30m |[0m
+[0;100;30m |[0mlet%expect_test _ =
+[0;100;30m |[0m  let conf = conf () in
+[0;100;30m |[0m  print_dyn (Findlib.Config.to_dyn conf);
+[0;41;30m-|[0m[0m[0;2m  [%expect[0m[0m
+[0;41;30m-|[0m[0m[0;31m    {|[0m[0m
+[0;41;30m-|[0m[0m[0;31m    { vars =[0m[0m
+[0;41;30m-|[0m[0m[0;31m        map[0m[0m
+[0;41;30m-|[0m[0m[0;31m          { "FOO_BAR" :[0m[0m
+[0;41;30m-|[0m[0m[0;31m              { set_rules =[0m[0m
+[0;41;30m-|[0m[0m[0;31m                  [ { preds_required = set { "env"; "tlc" }[0m[0m
+[0;41;30m-|[0m[0m[0;31m                    ; preds_forbidden = set {}[0m[0m
+[0;41;30m-|[0m[0m[0;31m                    ; value = "my variable"[0m[0m
+[0;41;30m-|[0m[0m[0;31m                    }[0m[0m
+[0;41;30m-|[0m[0m[0;31m                  ][0m[0m
+[0;41;30m-|[0m[0m[0;31m              ; add_rules = [][0m[0m
+[0;41;30m-|[0m[0m[0;31m              }[0m[0m
+[0;41;30m-|[0m[0m[0;31m          }[0m[0m
+[0;41;30m-|[0m[0m[0;31m    ; preds = set { "tlc" }[0m[0m
+[0;41;30m-|[0m[0m[0;31m    } |}[0m[0;2m];[0m[0m
+[0;42;30m+|[0m[0m  [%expect[0;32m.unreachable[0m];[0m
+[0;41;30m-|[0m[0m[0;2m  print_dyn (Env.to_dyn (Findlib.Config.env conf));[0m[0m
+[0;41;30m-|[0m[0m[0;2m  [%expect[0m[0;31m {| map { "FOO_BAR" : "my variable" }[0m[0;2m |}][0m[0m
+[0;42;30m+|[0m[0m  print_dyn (Env.to_dyn (Findlib.Config.env conf));[0m
+[0;42;30m+|[0m[0m  [%expect[0;32m.unreachable][0m[0m
+[0;42;30m+|[0m[0m[0;32m[@@expect.uncaught_exn {|[0m[0m
+[0;42;30m+|[0m[0m[0;32m  ( "Error: ocamlfind toolchain tlc isn't defined in\\[0m[0m
+[0;42;30m+|[0m[0m[0;32m   \\n/Users/roland/Documents/code/dune/../unit-tests/findlib-db/../toolchain.d\\[0m[0m
+[0;42;30m+|[0m[0m[0;32m   \\n(context: <context>)\\[0m[0m
+[0;42;30m+|[0m[0m[0;32m   \\n")[0m |}][0m
+`;
+
+/**
+ * The result of parsing `expectError4`.
+ */
+export const expectError4Object = [
+    {
+        name: "test/expect-tests/findlib_tests.ml",
+        tests: [
+            {
+                line: 137,
+                name: "test/expect-tests/findlib_tests.ml Line 137",
+                startCol: 0,
+                endCol: 575,
+                actual: '-|  [%expect\n-|    {|\n-|    { vars =\n-|        map\n-|          { "FOO_BAR" :\n-|              { set_rules =\n-|                  [ { preds_required = set { "env"; "tlc" }\n-|                    ; preds_forbidden = set {}\n-|                    ; value = "my variable"\n-|                    }\n-|                  ]\n-|              ; add_rules = []\n-|              }\n-|          }\n-|    ; preds = set { "tlc" }\n-|    } |}];\n+|  [%expect.unreachable];\n-|  print_dyn (Env.to_dyn (Findlib.Config.env conf));\n-|  [%expect {| map { "FOO_BAR" : "my variable" } |}]\n+|  print_dyn (Env.to_dyn (Findlib.Config.env conf));\n+|  [%expect.unreachable]\n+|[@@expect.uncaught_exn {|\n+|  ( "Error: ocamlfind toolchain tlc isn\'t defined in\\\n+|   \\n/Users/roland/Documents/code/dune/../unit-tests/findlib-db/../toolchain.d\\\n+|   \\n(context: <context>)\\\n+|   \\n") |}]',
             },
         ],
     },

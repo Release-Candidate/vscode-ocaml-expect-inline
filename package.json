@@ -1,7 +1,7 @@
 {
     "name": "vscode-ocaml-expect-inline",
     "displayName": "OCaml Expect and Inline Tests",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "preview": false,
     "publisher": "release-candidate",
     "description": "Support for OCaml Expect PPX and inline PPX tests.",
@@ -60,7 +60,25 @@
                 "expectppx.discoverOnStartup": {
                     "type": "boolean",
                     "default": true,
-                    "markdownDescription": "Run test discovery on extension startup? If this is false, only tests in open files are added to the Test Explorer tree."
+                    "markdownDescription": "Run test discovery on extension startup? If this is false, only tests in open files are added to the Test Explorer tree. If this is set to `false` set `#expectppx.discoverInSources#` to `true`!"
+                },
+                "expectppx.discoverInSources": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Whether to parse source files for tests when opening or saving them. Must be set to `true` if `#expectppx.discoverOnStartup#` is `false`"
+                },
+                "expectppx.dunePath": {
+                    "type": "string",
+                    "default": "dune",
+                    "markdownDescription": "Path to the Dune executable `dune`, if `opam env` doesn't yield the right one. Can be either an absolute or a path relative to the project's root. Default: `dune`, use the one in the current Opam environment."
+                },
+                "expectppx.excludeRunners": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [],
+                    "markdownDescription": "Add the paths to all inline test runner that take to long to run on startup."
                 }
             }
         }

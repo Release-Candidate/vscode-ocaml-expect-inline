@@ -41,6 +41,7 @@ export async function activate(context: vscode.ExtensionContext) {
         return;
     }
     await setupExtension(context, outChannel);
+    outChannel.appendLine("Extension startup finished.");
 }
 
 /**
@@ -93,6 +94,11 @@ async function subscribeToChanges(
         t.addTests(env, h.workspaceFolders());
     };
 
+    const configDisposable = vscode.workspace.onDidChangeConfiguration((e) =>
+        configChanged(env, e)
+    );
+    context.subscriptions.push(configDisposable);
+
     const disposable = vscode.workspace.onDidChangeWorkspaceFolders(
         async (e) => {
             if (c.getCfgDiscover(env.config)) {
@@ -103,16 +109,51 @@ async function subscribeToChanges(
     );
     context.subscriptions.push(disposable);
 
-    const disposable2 = vscode.workspace.onDidOpenTextDocument(async (e) => {
-        if (p.isOCamlFile(e.uri.path)) {
-            await parseSource.parseTextDocument(env, e);
-        }
-    });
+    if (c.getCfgDiscoverInSources(env.config)) {
+        registerSourceChanges(env, context);
+    }
+}
+
+/**
+ * Register callbacks if a text editor has been opened or saved.
+ * @param env The extension's environment.
+ * @param context The extension context.
+ */
+function registerSourceChanges(env: h.Env, context: vscode.ExtensionContext) {
+    if (!c.getCfgDiscover(env.config)) {
+        const disposable2 = vscode.workspace.onDidOpenTextDocument(
+            async (e) => {
+                if (p.isOCamlFile(e.uri.path)) {
+                    await parseSource.parseTextDocument(env, e);
+                }
+            }
+        );
+        context.subscriptions.push(disposable2);
+    }
     const disposable3 = vscode.workspace.onDidSaveTextDocument(async (e) => {
         if (p.isOCamlFile(e.uri.path)) {
             await parseSource.parseTextDocument(env, e);
         }
     });
-    context.subscriptions.push(disposable2);
     context.subscriptions.push(disposable3);
+}
+
+/**
+ * Called, if the configuration has changed.
+ * @param env The extension's environment.
+ * @param e The change event.
+ */
+function configChanged(env: h.Env, e: vscode.ConfigurationChangeEvent) {
+    if (e.affectsConfiguration(c.cfgSection)) {
+        env.outChannel.appendLine(`Config changed!`);
+        vscode.window
+            .showInformationMessage(
+                "The configuration has changed!\nReload the window for the changes to take effect.",
+                "Reload"
+            )
+            // eslint-disable-next-line no-unused-vars
+            .then((_) =>
+                vscode.commands.executeCommand("workbench.action.reloadWindow")
+            );
+    }
 }
