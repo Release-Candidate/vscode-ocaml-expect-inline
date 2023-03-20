@@ -122,11 +122,11 @@ async function addTests(
 ) {
     const { groupItem } = getOrCreateParents(env, data.relPath);
     // eslint-disable-next-line no-await-in-loop
-    const out = await io.runDuneBuild(
-        data.relPath.root,
-        data.parent,
-        data.libName
-    );
+    const out = await io.runDuneBuild(data.relPath.root, {
+        duneCmd: c.getCfgDunePath(env.config),
+        libDir: data.parent,
+        libName: data.libName,
+    });
     env.outChannel.appendLine(
         `Dune build output stdout: ${out.stdout} stderr: ${out.stderr} error: ${
             out.error ? out.error : ""

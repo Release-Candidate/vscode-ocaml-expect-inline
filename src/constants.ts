@@ -185,6 +185,37 @@ export const cfgDiscoverOnStartup = "discoverOnStartup";
 export const cfgDefaultDiscoverOnStartup = true;
 
 /**
+ * Do parse source files for tests on save or open.
+ */
+export const cfgDiscoverInSources = "discoverInSources";
+
+/**
+ * The default value of `cfgDiscoverInSources`.
+ */
+export const cfgDefaultDiscoverInSources = false;
+
+/**
+ * The path of the Dune Executable.
+ */
+export const cfgDunePath = "dunePath";
+
+/**
+ * The default value for the Dune path.
+ */
+export const cfgDefaultDunePath = duneCmd;
+
+/**
+ * A list of inline test runners to exclude from adding to the Test Explorer on
+ * startup or refresh.
+ */
+export const cfgExcludeRunners = "excludeRunners";
+
+/**
+ * The default value of 'excludeRunners'.
+ */
+export const cfgDefaultExcludeRunners: string[] = [];
+
+/**
  * Return the configuration value for `discoverOnStartup`.
  *
  * @param config The configuration object to use.
@@ -196,4 +227,46 @@ export function getCfgDiscover(config: vscode.WorkspaceConfiguration) {
         return cfgDefaultDiscoverOnStartup;
     }
     return doDiscover;
+}
+
+/**
+ * Return the configuration value for `discoverOnStartup`.
+ *
+ * @param config The configuration object to use.
+ * @returns The configuration value for `discoverOnStartup`.
+ */
+export function getCfgDiscoverInSources(config: vscode.WorkspaceConfiguration) {
+    const doDiscover = config.get<boolean>(cfgDiscoverInSources);
+    if (doDiscover === undefined) {
+        return cfgDefaultDiscoverInSources;
+    }
+    return doDiscover;
+}
+
+/**
+ * Return the configuration value for `dunePath`.
+ *
+ * @param config The configuration object to use.
+ * @returns The configuration value for `dunePath`.
+ */
+export function getCfgDunePath(config: vscode.WorkspaceConfiguration) {
+    const dunePath = config.get<string>(cfgDunePath);
+    if (dunePath === undefined) {
+        return cfgDefaultDunePath;
+    }
+    return dunePath;
+}
+
+/**
+ * Return the configuration value for `excludeRunners`.
+ *
+ * @param config The configuration object to use.
+ * @returns The configuration value for `excludeRunners`.
+ */
+export function getCfgExcludeRunners(config: vscode.WorkspaceConfiguration) {
+    const excludeRunners = config.get<string[]>(cfgExcludeRunners);
+    if (excludeRunners === undefined) {
+        return cfgDefaultExcludeRunners;
+    }
+    return excludeRunners;
 }
