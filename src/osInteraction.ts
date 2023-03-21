@@ -264,11 +264,7 @@ async function runDuneCommand(
         if (parse.isDuneLocked(out.stderr)) {
             // eslint-disable-next-line no-magic-numbers
             await sleep(sleepTime * 1000);
-            return runDuneCommand(
-                root,
-                { args: cmd.args, duneCmd: cmd.duneCmd },
-                sleepTime
-            );
+            return runDuneCommand(root, cmd, sleepTime);
         }
     } else {
         return out;
@@ -345,6 +341,7 @@ export async function runRunnerListDune(
                 c.runnerLibArg,
                 parse.getLibrary(runner),
                 c.runnerListOption,
+                c.runnerNoColorOption,
             ],
         },
         // eslint-disable-next-line no-magic-numbers
@@ -377,7 +374,8 @@ export async function runRunnerTestsDune(data: {
                 c.duneEndArgs,
                 c.runnerLibArg,
                 data.library,
-                c.runnerListOption,
+                c.runnerVerboseOption,
+                c.runnerNoColorOption,
                 c.runnerTestArg,
                 ...data.tests,
             ],

@@ -37,17 +37,13 @@ This extension lets you run OCaml [PPX Expect](https://github.com/janestreet/ppx
 - uses dune to compile and run the tests
 - support for expect PPX tests and inline PPX tests
 - filtering of tests by name
-- parses the test list output of the test runners to fill the Test Explorer view: the test tree view is consistent with the test runners
-- parses OCaml source files on open and save for new, updated or deleted tests
-- configurable test discovery on startup: if `Expectppx: Discover On Startup` is set to `false` no tests are run on startup, tests are only run by explicitly running tests or pressing the `Refresh Tests` button.
-- support for multiple workspaces
+- parses the test list output of the test runners to fill the Test Explorer view: faster than grepping every source file for test cases and the test tree view is consistent with the test runners
 - retries running dune if another instance has locked the project until dune can acquire the lock
 - Uses VS Code's native Test Explorer (no additional extension needed)
 
 ### Drawbacks
 
 - needs dune
-- test discovery can be slow, because all tests of all test runners have to be run.
 - retries running dune if another instance has locked the project until dune can acquire the lock - may loop forever.
 - when running tests, every test is run on its own, sequentially
 - Uses VS Code's native Test Explorer UI
@@ -67,9 +63,7 @@ This extension lets you run OCaml [PPX Expect](https://github.com/janestreet/ppx
 Either
 
 - install the extension directly from the Visual Studio Code Marketplace [Expect and Inline Tests](https://marketplace.visualstudio.com/items?itemName=release-candidate.vscode-ocaml-expect-inline)
-- install the extension directly from the Open VSX Registry [Expect and Inline Tests
-Preview
-](https://open-vsx.org/extension/Release-Candidate/vscode-ocaml-expect-inline)
+- install the extension directly from the Open VSX Registry [Expect and Inline Tests](https://open-vsx.org/extension/Release-Candidate/vscode-ocaml-expect-inline)
 - or download the extension from the [latest release at GitHub](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/releases/latest)
 - or build the extension yourself by cloning the [GitHub Repository](https://github.com/Release-Candidate/vscode-ocaml-expect-inline) and running `yarn install` and `yarn package` in the root directory of the cloned repo.
 
@@ -127,10 +121,10 @@ A: In the `OUTPUT` tab of the Panel, you have to select the extension named `Exp
 
 ## Configuration
 
-- `expectppx.discoverOnStartup` - Boolean. Set this to `false` if you do not want to run all expect and inline tests on startup to discover tests. If you want to rediscover all test by running all inline test runners, use the `Refresh Tests` button in the upper right corner of the Test Explorer.
-- `expectppx.discoverInSources` - Boolean. Whether to parse source files on open and save for tests and update the Test Explorer tree. Should be set to `true` if `expectppx.discoverOnStartup` is `false`.
 - `expectppx.dunePath` - Set an absolute path or a path relative to the project root of the Dune executable. Default: `dune` - use the one in the local Opam environment or in `PATH`.
 - `expectppx.excludeRunners` - A list of inline test runner names to be excluded from test discovery an startup or refresh, e.g. because they take too long to finish. E.g. `["inline_test_runner_fsevents_tests.exe"]` to exclude the test runner of the `fsevents_tests` library.
+- `expectppx.discoverOnStartup` - Boolean. Set this to `false` if you do not want to run or compile all expect and inline test runners on startup to discover tests. If you want to rediscover all test by running all inline test runners, use the `Refresh Tests` button in the upper right corner of the Test Explorer.
+- `expectppx.discoverInSources` - Boolean. Whether to parse source files on open and save for tests and update the Test Explorer tree. Should be set to `true` if `expectppx.discoverOnStartup` is `false`.
 
 ## Changes
 

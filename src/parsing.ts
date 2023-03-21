@@ -208,7 +208,7 @@ export function isDuneLocked(s: string) {
  * @param s The string to sanitize.
  * @returns The string `s` with removed ANSI color sequences.
  */
-export function removeColorCodes(s: string) {
+export function removeColorCodes1(s: string) {
     return s.replace(ansiRegexp, "");
 }
 
@@ -342,20 +342,19 @@ export function parseTestList(s: string) {
  * `{ name: group, tests: [{ id, name, line, startCol, endCol, expected, actual }] }`.
  */
 export function parseTestErrors(s: string) {
-    const sanitized = removeColorCodes(s);
     const errors = parseTestHelper<TestTypeIn>(
         testErrorRegex,
-        sanitized,
+        s,
         errorMatchToObject
     );
     const exceptionErrors = parseTestHelper<TestTypeIn>(
         testExceptionRegex,
-        sanitized,
+        s,
         exceptionMatchToObject
     );
     const expectErrors = parseTestHelper<TestTypeIn>(
         testExpectRegex,
-        sanitized,
+        s,
         expectMatchToObject
     );
     return groupTestHelper(errors.concat(exceptionErrors).concat(expectErrors));

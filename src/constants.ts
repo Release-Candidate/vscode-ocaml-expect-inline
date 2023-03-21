@@ -132,9 +132,20 @@ export const runnerLibArg = "inline-test-runner";
 export const runnerTestArg = "-only-test";
 
 /**
- * Options to pass to the inline test runner to get a list of all tests.
+ * Option to pass to the inline test runner to get a list of all tests.
  */
-export const runnerListOption = "-verbose";
+export const runnerListOption = "-list-test-names";
+
+/**
+ * Option to pass to the inline test runner to get a list of all test which are
+ * being run, not just the failed ones.
+ */
+export const runnerVerboseOption = "-verbose";
+
+/**
+ * Option to pass to the inline test runner to get colorless output.
+ */
+export const runnerNoColorOption = "-no-color";
 
 /**
  * Glob pattern to find the inline runner executable.
