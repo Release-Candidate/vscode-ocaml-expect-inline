@@ -70,6 +70,12 @@
 			"task": "compile",
 			"problemMatcher": [],
 			"label": "yarn: compile"
+		},
+		{
+			"type": "yarn",
+			"task": "publish-ovsx",
+			"problemMatcher": [],
+			"label": "yarn: publish-ovsx"
 		}
 	]
 }

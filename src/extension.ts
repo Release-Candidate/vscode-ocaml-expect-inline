@@ -149,7 +149,7 @@ function configChanged(env: h.Env, e: vscode.ConfigurationChangeEvent) {
         vscode.window
             .showInformationMessage(
                 "The configuration has changed!\nReload the window for the changes to take effect.",
-                "Reload"
+                "Reload Now"
             )
             // eslint-disable-next-line no-unused-vars
             .then((_) =>

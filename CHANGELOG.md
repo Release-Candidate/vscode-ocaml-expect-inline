@@ -1,5 +1,16 @@
 # OCaml Expect and Inline Test Explorer for Visual Studio Code Changelog
 
+## Version 0.5.0 (2023-03-21)
+
+- No need to run all tests at startup or refresh. Use the `-list-test-names` argument of the inline test runners.
+- Disable ANSI color escape sequences in output of test failures.
+- Update the documentation.
+
+### Internal Changes
+
+- Remove ANSI escape sequences from test fixtures.
+- Add yarn target for the Open VSX Registry.
+
 ## Version 0.4.0 (2023-03-20)
 
 - New configuration values:

@@ -53,7 +53,7 @@ export async function addTests(
  */
 // eslint-disable-next-line max-statements
 async function addWorkspaceTests(env: h.Env, root: vscode.WorkspaceFolder) {
-    await setOpamEnv(root, env);
+    await setOpamEnv(env, root);
 
     // eslint-disable-next-line @typescript-eslint/no-extra-parens
     if (!(await h.isDuneWorking(root, env))) {
@@ -97,9 +97,10 @@ async function addWorkspaceTests(env: h.Env, root: vscode.WorkspaceFolder) {
 
 /**
  * Run `opam env`, parse its output and set the environment accordingly.
+ * @param env The extension's environment.
  * @param root The working directory for `opam`.
  */
-async function setOpamEnv(root: vscode.WorkspaceFolder, env: h.Env) {
+async function setOpamEnv(env: h.Env, root: vscode.WorkspaceFolder) {
     const opamEnv = await io.opamEnv(root);
     for (const oEnv of opamEnv) {
         process.env[oEnv.name] = oEnv.value;

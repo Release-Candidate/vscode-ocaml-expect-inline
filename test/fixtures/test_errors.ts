@@ -53,51 +53,51 @@ Error: The constructor TypeError expects 2 argument(s),
  * Not a compile error.
  */
 export const noCompileError = `File "test/expect-tests/findlib_tests.ml", line 137, characters 0-575 (0.001 sec)
-[0;31m------ [0m[0;1m/Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml[0m
-[0;32m++++++ [0m[0;1m/Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml.corrected[0m
+------ /Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml
+++++++ /Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml.corrected
 File "/Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml", line 140, characters 0-1:
-[0;100;30m |[0m              ; add_rules = []
-[0;100;30m |[0m              }
-[0;100;30m |[0m          }
-[0;100;30m |[0m    ; subs = []
-[0;100;30m |[0m    } |}]
-[0;100;30m |[0m
-[0;100;30m |[0mlet conf () =
-[0;100;30m |[0m  Findlib.Config.load
-[0;100;30m |[0m    (Path.Outside_build_dir.relative db_path "../toolchain")
-[0;100;30m |[0m    ~toolchain:"tlc" ~context:"<context>"
-[0;100;30m |[0m  |> Memo.run
-[0;100;30m |[0m  |> Test_scheduler.(run (create ()))
-[0;100;30m |[0m
-[0;100;30m |[0mlet%expect_test _ =
-[0;100;30m |[0m  let conf = conf () in
-[0;100;30m |[0m  print_dyn (Findlib.Config.to_dyn conf);
-[0;41;30m-|[0m[0m[0;2m  [%expect[0m[0m
-[0;41;30m-|[0m[0m[0;31m    {|[0m[0m
-[0;41;30m-|[0m[0m[0;31m    { vars =[0m[0m
-[0;41;30m-|[0m[0m[0;31m        map[0m[0m
-[0;41;30m-|[0m[0m[0;31m          { "FOO_BAR" :[0m[0m
-[0;41;30m-|[0m[0m[0;31m              { set_rules =[0m[0m
-[0;41;30m-|[0m[0m[0;31m                  [ { preds_required = set { "env"; "tlc" }[0m[0m
-[0;41;30m-|[0m[0m[0;31m                    ; preds_forbidden = set {}[0m[0m
-[0;41;30m-|[0m[0m[0;31m                    ; value = "my variable"[0m[0m
-[0;41;30m-|[0m[0m[0;31m                    }[0m[0m
-[0;41;30m-|[0m[0m[0;31m                  ][0m[0m
-[0;41;30m-|[0m[0m[0;31m              ; add_rules = [][0m[0m
-[0;41;30m-|[0m[0m[0;31m              }[0m[0m
-[0;41;30m-|[0m[0m[0;31m          }[0m[0m
-[0;41;30m-|[0m[0m[0;31m    ; preds = set { "tlc" }[0m[0m
-[0;41;30m-|[0m[0m[0;31m    } |}[0m[0;2m];[0m[0m
-[0;42;30m+|[0m[0m  [%expect[0;32m.unreachable[0m];[0m
-[0;41;30m-|[0m[0m[0;2m  print_dyn (Env.to_dyn (Findlib.Config.env conf));[0m[0m
-[0;41;30m-|[0m[0m[0;2m  [%expect[0m[0;31m {| map { "FOO_BAR" : "my variable" }[0m[0;2m |}][0m[0m
-[0;42;30m+|[0m[0m  print_dyn (Env.to_dyn (Findlib.Config.env conf));[0m
-[0;42;30m+|[0m[0m  [%expect[0;32m.unreachable][0m[0m
-[0;42;30m+|[0m[0m[0;32m[@@expect.uncaught_exn {|[0m[0m
-[0;42;30m+|[0m[0m[0;32m  ( "Error: ocamlfind toolchain tlc isn't defined in\\[0m[0m
-[0;42;30m+|[0m[0m[0;32m   \\n/Users/roland/Documents/code/dune/../unit-tests/findlib-db/../toolchain.d\\[0m[0m
-[0;42;30m+|[0m[0m[0;32m   \\n(context: <context>)\\[0m[0m
-[0;42;30m+|[0m[0m[0;32m   \\n")[0m |}][0m
+ |              ; add_rules = []
+ |              }
+ |          }
+ |    ; subs = []
+ |    } |}]
+ |
+ |let conf () =
+ |  Findlib.Config.load
+ |    (Path.Outside_build_dir.relative db_path "../toolchain")
+ |    ~toolchain:"tlc" ~context:"<context>"
+ |  |> Memo.run
+ |  |> Test_scheduler.(run (create ()))
+ |
+ |let%expect_test _ =
+ |  let conf = conf () in
+ |  print_dyn (Findlib.Config.to_dyn conf);
+-|  [%expect
+-|    {|
+-|    { vars =
+-|        map
+-|          { "FOO_BAR" :
+-|              { set_rules =
+-|                  [ { preds_required = set { "env"; "tlc" }
+-|                    ; preds_forbidden = set {}
+-|                    ; value = "my variable"
+-|                    }
+-|                  ]
+-|              ; add_rules = []
+-|              }
+-|          }
+-|    ; preds = set { "tlc" }
+-|    } |}];
++|  [%expect.unreachable];
+-|  print_dyn (Env.to_dyn (Findlib.Config.env conf));
+-|  [%expect {| map { "FOO_BAR" : "my variable" } |}]
++|  print_dyn (Env.to_dyn (Findlib.Config.env conf));
++|  [%expect.unreachable]
++|[@@expect.uncaught_exn {|
++|  ( "Error: ocamlfind toolchain tlc isn't defined in\\
++|   \\n/Users/roland/Documents/code/dune/../unit-tests/findlib-db/../toolchain.d\\
++|   \\n(context: <context>)\\
++|   \\n") |}]
 `;
 
 /**
@@ -194,43 +194,43 @@ export const exceptionError2Object = [
  * /Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml, line 34, start: 0, end: 1
  */
 export const expectError1 = `File "lib/interp_common.ml", line 32, characters 0-76: Expect -1.1 (0.000 sec)
-[0;31m------ [0m[0;1m/Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml[0m
-[0;32m++++++ [0m[0;1m/Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml.corrected[0m
+------ /Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml
+++++++ /Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml.corrected
 File "/Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml", line 34, characters 0-1:
-[0;100;30m |[0m
-[0;100;30m |[0m(*******************************************************************************
-[0;100;30m |[0m    Some tests. *)
-[0;100;30m |[0m
-[0;100;30m |[0mlet%test "parse true" = true (*Bool true = parse "true"*)
-[0;100;30m |[0mlet%test_unit _ = ignore (parse "false")
-[0;100;30m |[0mlet%test "parse false" = Bool false = parse "false"
-[0;100;30m |[0mlet%test "parse not true1" = Unop (Not, Bool true) = parse "not true"
-[0;100;30m |[0mlet%test "parse not false" = Unop (Not, Bool false) = parse "not false"
-[0;100;30m |[0mlet%test "parse 1" = Int 1 = parse "1"
-[0;100;30m |[0mlet%test "parse 1.1" = Float 1.1 = parse "1.1"
-[0;100;30m |[0mlet%test "parse -1" = Unop (Minus, Int 1) = parse "-1"
-[0;100;30m |[0mlet%test "parse -1.1" = Unop (Minus, Float 1.1) = parse "-1.1"
-[0;100;30m |[0m
-[0;100;30m |[0mlet%expect_test "Expect -1.1" =
-[0;100;30m |[0m  print_string "-1.1";
-[0;41;30m-|[0m[0m[0;2m  [%expect {|-1.[0m[0;31m12[0m[0;2m|}][0m[0m
-[0;42;30m+|[0m[0m  [%expect {|-1.[0;32m1[0m|}][0m
-[0;100;30m |[0m
-[0;100;30m |[0mlet%test "parse 11+11" = Binop (Add, Int 11, Int 11) = parse "11+11"
-[0;100;30m |[0m
-[0;100;30m |[0mlet%test "parse not true" =
-[0;100;30m |[0m  Binop (Add, Float 21., Float 21.2) = parse "21.+21.2"
-[0;100;30m |[0m
-[0;100;30m |[0mlet%test "parse 11-11" = Binop (Subtr, Int 11, Int 11) = parse "11-11"
-[0;100;30m |[0m
-[0;100;30m |[0mlet%test "parse 21.-21.2" =
-[0;100;30m |[0m  Binop (Subtr, Float 21., Float 21.2) = parse "21.-21.2"
-[0;100;30m |[0m
-[0;100;30m |[0mlet%test "parse 11*11" = Binop (Mult, Int 11, Int 11) = parse "11*11"
-[0;100;30m |[0m
-[0;100;30m |[0mlet%test "parse 21.*21.2" =
-[0;100;30m |[0m  Binop (Mult, Float 21., Float 21.2) = parse "21.*21.2"
-[0;100;30m |[0m`;
+ |
+ |(*******************************************************************************
+ |    Some tests. *)
+ |
+ |let%test "parse true" = true (*Bool true = parse "true"*)
+ |let%test_unit _ = ignore (parse "false")
+ |let%test "parse false" = Bool false = parse "false"
+ |let%test "parse not true1" = Unop (Not, Bool true) = parse "not true"
+ |let%test "parse not false" = Unop (Not, Bool false) = parse "not false"
+ |let%test "parse 1" = Int 1 = parse "1"
+ |let%test "parse 1.1" = Float 1.1 = parse "1.1"
+ |let%test "parse -1" = Unop (Minus, Int 1) = parse "-1"
+ |let%test "parse -1.1" = Unop (Minus, Float 1.1) = parse "-1.1"
+ |
+ |let%expect_test "Expect -1.1" =
+ |  print_string "-1.1";
+-|  [%expect {|-1.12|}]
++|  [%expect {|-1.1|}]
+ |
+ |let%test "parse 11+11" = Binop (Add, Int 11, Int 11) = parse "11+11"
+ |
+ |let%test "parse not true" =
+ |  Binop (Add, Float 21., Float 21.2) = parse "21.+21.2"
+ |
+ |let%test "parse 11-11" = Binop (Subtr, Int 11, Int 11) = parse "11-11"
+ |
+ |let%test "parse 21.-21.2" =
+ |  Binop (Subtr, Float 21., Float 21.2) = parse "21.-21.2"
+ |
+ |let%test "parse 11*11" = Binop (Mult, Int 11, Int 11) = parse "11*11"
+ |
+ |let%test "parse 21.*21.2" =
+ |  Binop (Mult, Float 21., Float 21.2) = parse "21.*21.2"
+ |`;
 
 /**
  * The result of parsing `expectError1`.
@@ -255,43 +255,43 @@ export const expectError1Object = [
  * /Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml, line 34, start: 0, end: 1
  */
 export const expectError2 = `File "lib/interp_common.ml", line 57, characters 0-95 (0.000 sec)
-[0;31m------ [0m[0;1m/Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml[0m
-[0;32m++++++ [0m[0;1m/Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml.corrected[0m
+------ /Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml
+++++++ /Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml.corrected
 File "/Users/roland/Documents/code/OCaml-Interp/lib/interp_common.ml", line 59, characters 0-1:
-[0;100;30m |[0mlet%test "parse 11-11" = true (*Binop (Subtr, Int 11, Int 11) = parse "11-11"*)
-[0;100;30m |[0m
-[0;100;30m |[0mlet%test_unit "parse 21.-21.2" =
-[0;100;30m |[0m  (*Binop (Subtr, Float 21., Float 21.2) = parse "21.-21.2"*)
-[0;100;30m |[0m   [%test_result: int] 5 ~expect:4
-[0;100;30m |[0m
-[0;100;30m |[0mlet%test "parse 11*11" = true (*Binop (Mult, Int 11, Int 11) = parse "11*11"*)
-[0;100;30m |[0m
-[0;100;30m |[0mlet%test "parse 21.*21.2" = true
-[0;100;30m |[0m (* Binop (Mult, Float 21., Float 21.2) = parse "21.*21.2"*)
-[0;100;30m |[0m
-[0;100;30m |[0mlet%test "parse 11/-11" = true
-[0;100;30m |[0m (* Binop (Div, Int 11, Unop (Minus, Int 11)) = parse "11/-11"*)
-[0;100;30m |[0m
-[0;100;30m |[0mlet%expect_test _ =
-[0;100;30m |[0m  Stdio.Out_channel.output_string Stdio.stdout "-1.1";
-[0;41;30m-|[0m[0m[0;2m  [%expect {|-1.[0m[0;31m5[0m[0;2m|}][0m[0m
-[0;42;30m+|[0m[0m  [%expect {|-1.[0;32m1[0m|}][0m
-[0;100;30m |[0m
-[0;100;30m |[0mlet%test "parse 21./-21.2" = failwith "NO"
-[0;100;30m |[0m  (*Binop (Div, Float 21., Unop (Minus, Float 21.2)) = parse "21./-21.2"*)
-[0;100;30m |[0m
-[0;100;30m |[0m(* =============================================================================
-[0;100;30m |[0m   Error messages
-[0;100;30m |[0m*)
-[0;100;30m |[0m
-[0;100;30m |[0mexception TypeError of string
-[0;100;30m |[0mexception RuntimeError of string
-[0;100;30m |[0m
-[0;100;30m |[0mlet type_error s = raise (TypeError s)
-[0;100;30m |[0mlet runtime_error s = raise (RuntimeError s)
-[0;100;30m |[0m
-[0;100;30m |[0m(** [unbound_var_err x] returns the error message for an unbound variable x. *)
-[0;100;30m |[0mlet unbound_var_err x = "Unbound variable " ^ x
+ |let%test "parse 11-11" = true (*Binop (Subtr, Int 11, Int 11) = parse "11-11"*)
+ |
+ |let%test_unit "parse 21.-21.2" =
+ |  (*Binop (Subtr, Float 21., Float 21.2) = parse "21.-21.2"*)
+ |   [%test_result: int] 5 ~expect:4
+ |
+ |let%test "parse 11*11" = true (*Binop (Mult, Int 11, Int 11) = parse "11*11"*)
+ |
+ |let%test "parse 21.*21.2" = true
+ | (* Binop (Mult, Float 21., Float 21.2) = parse "21.*21.2"*)
+ |
+ |let%test "parse 11/-11" = true
+ | (* Binop (Div, Int 11, Unop (Minus, Int 11)) = parse "11/-11"*)
+ |
+ |let%expect_test _ =
+ |  Stdio.Out_channel.output_string Stdio.stdout "-1.1";
+-|  [%expect {|-1.5|}]
++|  [%expect {|-1.1|}]
+ |
+ |let%test "parse 21./-21.2" = failwith "NO"
+ |  (*Binop (Div, Float 21., Unop (Minus, Float 21.2)) = parse "21./-21.2"*)
+ |
+ |(* =============================================================================
+ |   Error messages
+ |*)
+ |
+ |exception TypeError of string
+ |exception RuntimeError of string
+ |
+ |let type_error s = raise (TypeError s)
+ |let runtime_error s = raise (RuntimeError s)
+ |
+ |(** [unbound_var_err x] returns the error message for an unbound variable x. *)
+ |let unbound_var_err x = "Unbound variable " ^ x
 `;
 
 /**
@@ -377,51 +377,51 @@ export const expectError3Object = [
  * Expect error with an empty 'expect' value.
  */
 export const expectError4 = `File "test/expect-tests/findlib_tests.ml", line 137, characters 0-575 (0.001 sec)
-[0;31m------ [0m[0;1m/Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml[0m
-[0;32m++++++ [0m[0;1m/Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml.corrected[0m
+------ /Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml
+++++++ /Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml.corrected
 File "/Users/roland/Documents/code/dune/test/expect-tests/findlib_tests.ml", line 140, characters 0-1:
-[0;100;30m |[0m              ; add_rules = []
-[0;100;30m |[0m              }
-[0;100;30m |[0m          }
-[0;100;30m |[0m    ; subs = []
-[0;100;30m |[0m    } |}]
-[0;100;30m |[0m
-[0;100;30m |[0mlet conf () =
-[0;100;30m |[0m  Findlib.Config.load
-[0;100;30m |[0m    (Path.Outside_build_dir.relative db_path "../toolchain")
-[0;100;30m |[0m    ~toolchain:"tlc" ~context:"<context>"
-[0;100;30m |[0m  |> Memo.run
-[0;100;30m |[0m  |> Test_scheduler.(run (create ()))
-[0;100;30m |[0m
-[0;100;30m |[0mlet%expect_test _ =
-[0;100;30m |[0m  let conf = conf () in
-[0;100;30m |[0m  print_dyn (Findlib.Config.to_dyn conf);
-[0;41;30m-|[0m[0m[0;2m  [%expect[0m[0m
-[0;41;30m-|[0m[0m[0;31m    {|[0m[0m
-[0;41;30m-|[0m[0m[0;31m    { vars =[0m[0m
-[0;41;30m-|[0m[0m[0;31m        map[0m[0m
-[0;41;30m-|[0m[0m[0;31m          { "FOO_BAR" :[0m[0m
-[0;41;30m-|[0m[0m[0;31m              { set_rules =[0m[0m
-[0;41;30m-|[0m[0m[0;31m                  [ { preds_required = set { "env"; "tlc" }[0m[0m
-[0;41;30m-|[0m[0m[0;31m                    ; preds_forbidden = set {}[0m[0m
-[0;41;30m-|[0m[0m[0;31m                    ; value = "my variable"[0m[0m
-[0;41;30m-|[0m[0m[0;31m                    }[0m[0m
-[0;41;30m-|[0m[0m[0;31m                  ][0m[0m
-[0;41;30m-|[0m[0m[0;31m              ; add_rules = [][0m[0m
-[0;41;30m-|[0m[0m[0;31m              }[0m[0m
-[0;41;30m-|[0m[0m[0;31m          }[0m[0m
-[0;41;30m-|[0m[0m[0;31m    ; preds = set { "tlc" }[0m[0m
-[0;41;30m-|[0m[0m[0;31m    } |}[0m[0;2m];[0m[0m
-[0;42;30m+|[0m[0m  [%expect[0;32m.unreachable[0m];[0m
-[0;41;30m-|[0m[0m[0;2m  print_dyn (Env.to_dyn (Findlib.Config.env conf));[0m[0m
-[0;41;30m-|[0m[0m[0;2m  [%expect[0m[0;31m {| map { "FOO_BAR" : "my variable" }[0m[0;2m |}][0m[0m
-[0;42;30m+|[0m[0m  print_dyn (Env.to_dyn (Findlib.Config.env conf));[0m
-[0;42;30m+|[0m[0m  [%expect[0;32m.unreachable][0m[0m
-[0;42;30m+|[0m[0m[0;32m[@@expect.uncaught_exn {|[0m[0m
-[0;42;30m+|[0m[0m[0;32m  ( "Error: ocamlfind toolchain tlc isn't defined in\\[0m[0m
-[0;42;30m+|[0m[0m[0;32m   \\n/Users/roland/Documents/code/dune/../unit-tests/findlib-db/../toolchain.d\\[0m[0m
-[0;42;30m+|[0m[0m[0;32m   \\n(context: <context>)\\[0m[0m
-[0;42;30m+|[0m[0m[0;32m   \\n")[0m |}][0m
+ |              ; add_rules = []
+ |              }
+ |          }
+ |    ; subs = []
+ |    } |}]
+ |
+ |let conf () =
+ |  Findlib.Config.load
+ |    (Path.Outside_build_dir.relative db_path "../toolchain")
+ |    ~toolchain:"tlc" ~context:"<context>"
+ |  |> Memo.run
+ |  |> Test_scheduler.(run (create ()))
+ |
+ |let%expect_test _ =
+ |  let conf = conf () in
+ |  print_dyn (Findlib.Config.to_dyn conf);
+-|  [%expect
+-|    {|
+-|    { vars =
+-|        map
+-|          { "FOO_BAR" :
+-|              { set_rules =
+-|                  [ { preds_required = set { "env"; "tlc" }
+-|                    ; preds_forbidden = set {}
+-|                    ; value = "my variable"
+-|                    }
+-|                  ]
+-|              ; add_rules = []
+-|              }
+-|          }
+-|    ; preds = set { "tlc" }
+-|    } |}];
++|  [%expect.unreachable];
+-|  print_dyn (Env.to_dyn (Findlib.Config.env conf));
+-|  [%expect {| map { "FOO_BAR" : "my variable" } |}]
++|  print_dyn (Env.to_dyn (Findlib.Config.env conf));
++|  [%expect.unreachable]
++|[@@expect.uncaught_exn {|
++|  ( "Error: ocamlfind toolchain tlc isn't defined in\\
++|   \\n/Users/roland/Documents/code/dune/../unit-tests/findlib-db/../toolchain.d\\
++|   \\n(context: <context>)\\
++|   \\n") |}]
 `;
 
 /**

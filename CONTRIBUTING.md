@@ -14,7 +14,7 @@ On starting the extension - see `activationEvents` in [./package.json](./package
 
   - search for the inline test runner executables
   - run every one of them with `dune exec` so that the test runners are recompiled if necessary.
-  - use test runner arguments to run and list all tests
+  - use test runner arguments to list all tests
   - parse this output and add, update or remove nodes in the Test Explorer's tree and set the  location of the tests in the source files
 
 If a user presses the `Refresh Tests` button - see `controller.refreshHandler`:
@@ -29,7 +29,7 @@ If a user runs a test - see function `runHandler` in [./src/run_tests.ts](./src/
   - parse the output of the test
   - if a test failed, set the 'test message' to the output of the failed test
 
-If a source file has been opened or saved - see function `parseTextDocument` in file [./src/parse_source.ts](./src/parse_source.ts):
+If a source file has been opened or saved and the configuration is set - see function `parseTextDocument` in file [./src/parse_source.ts](./src/parse_source.ts):
 
 - parse the source file for a list of tests
 - check the parent directories of the source file for a dune configuration file `dune`

@@ -20,6 +20,6 @@
             "Unop",
             "VSIX"
         ],
-        "expectppx.dunePath": "_opam/bin/dune"
+        "expectppx.dunePath": "./dune.exe"
     }
 }

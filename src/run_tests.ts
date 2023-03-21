@@ -166,7 +166,7 @@ async function setTestError(
         data.out.stderr ? data.out.stderr : ""
     );
     let message = await constructMessage({
-        txt: output ? p.removeColorCodes(output) : "",
+        txt: output ? output : "",
         test: data.test,
         testData: env.testData,
         errElem,
