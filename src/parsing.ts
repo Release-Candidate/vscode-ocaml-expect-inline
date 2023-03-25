@@ -127,7 +127,13 @@ const testExceptionRegex =
  * - `rec` - diff view
  */
 const testExpectRegex =
-    /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):?\s*?(?<name>.*?)\s*(?:\([\p{N}.]+\s+sec\))?$.*?(?<rec>-\|.*?\[%expect.*?$(:?\n^[+-]+\|.*?$)+)/gmsu;
+    /\s*File\s+"(?<file>\S+)",\s+line\s+(?<line>[\p{N}]+),\s+characters\s+(?<start>[\p{N}]+)-(?<end>[\p{N}]+):?\s*?(?<name>.*?)\s*(?:\([\p{N}.]+\s+sec\))?$.*?(?!^\s+\|.*$)(?<exp>(?:^[-]\|.*?$\s+)+)(?<rec>(?:^[+]\|.*?$\s+)+)/gmsu;
+
+/**
+ * Regex to remove all unwanted strings from an 'expected' or 'actual' test result.
+ */
+const expectCleanRegex =
+    /(?:[+-][|] {2})|(?:\[%expect\s+)|(?:\s*\{\|\s*)|(?:\s*\|\}\s*\];?\s*?)/gsu;
 
 /**
  * Error message of the test runner if no matching tests to run have been found.
@@ -208,8 +214,18 @@ export function isDuneLocked(s: string) {
  * @param s The string to sanitize.
  * @returns The string `s` with removed ANSI color sequences.
  */
-export function removeColorCodes1(s: string) {
+export function removeColorCodes(s: string) {
     return s.replace(ansiRegexp, "");
+}
+
+/**
+ * Remove all unnecessary strings from an expect result, from 'expected' and
+ * 'actual'.
+ * @param s The string to 'clean'.
+ * @returns The 'cleaned' string `s`.
+ */
+function removeExpectJunk(s: string) {
+    return s.replace(expectCleanRegex, "");
 }
 
 /**
@@ -429,6 +445,7 @@ function expectMatchToObject(match: RegExpMatchArray) {
         startCol: getStartCol(match),
         endCol: getEndCol(match),
         actual: getActual(match),
+        expected: getExpected(match),
     };
 }
 
@@ -470,7 +487,9 @@ function listMatchToObject(match: RegExpMatchArray) {
  * @returns The `expected` part of a test failure.
  */
 function getExpected(match: RegExpMatchArray) {
-    return match.groups?.exp === undefined ? undefined : match.groups.exp;
+    return match.groups?.exp === undefined
+        ? undefined
+        : removeExpectJunk(match.groups.exp);
 }
 
 /**
@@ -479,7 +498,9 @@ function getExpected(match: RegExpMatchArray) {
  * @returns The `actual` part of a test failure.
  */
 function getActual(match: RegExpMatchArray) {
-    return match.groups?.rec === undefined ? undefined : match.groups.rec;
+    return match.groups?.rec === undefined
+        ? undefined
+        : removeExpectJunk(match.groups.rec);
 }
 
 /**

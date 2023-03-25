@@ -1,5 +1,9 @@
 # OCaml Expect and Inline Test Explorer for Visual Studio Code Changelog
 
+## Version 0.6.0 (2023-03-25)
+
+- Show the expected and actual values of Expect tests in VS Codes' diff view. See [Issue #6](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/issues/6).
+
 ## Version 0.5.0 (2023-03-21)
 
 - No need to run all tests at startup or refresh. Use the `-list-test-names` argument of the inline test runners.
