@@ -13,6 +13,9 @@ import Mocha = require("mocha");
 import * as path from "path";
 import glob from "glob";
 
+/**
+ * The actual Mocha test runner.
+ */
 export async function run(): Promise<void> {
     const mocha = new Mocha({
         ui: "tdd",

@@ -14,6 +14,9 @@ import * as c from "../src/constants";
 import { runTests } from "@vscode/test-electron";
 import path = require("path");
 
+/**
+ * The main entry point of the test runner.
+ */
 async function main() {
     try {
         // eslint-disable-next-line lines-around-comment
