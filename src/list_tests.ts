@@ -194,11 +194,12 @@ async function generateTestList(
     for (const rPath of data.runnerPaths) {
         env.outChannel.appendLine(`Starting runner ${rPath}`);
         // eslint-disable-next-line no-await-in-loop
-        const out = await io.runRunnerListDune(
-            data.root,
-            c.getCfgDunePath(env.config),
-            rPath
-        );
+        const out = await io.runRunnerListDune({
+            token: undefined,
+            root: data.root,
+            duneCmd: c.getCfgDunePath(env.config),
+            runner: rPath,
+        });
         env.outChannel.appendLine(
             `Finished run: ${rPath}\nList of tests:\n${out.stdout}\nStderr: ${
                 out.stderr
