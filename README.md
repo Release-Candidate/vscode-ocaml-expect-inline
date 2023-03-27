@@ -27,6 +27,7 @@ This extension lets you run OCaml [PPX Expect](https://github.com/janestreet/ppx
     - [Q: How can I change which test extension's tests are run by the `Run Tests` button in the upper right of the Test Explorer?](#q-how-can-i-change-which-test-extensions-tests-are-run-by-the-run-tests-button-in-the-upper-right-of-the-test-explorer)
     - [Q: What does the red circle with a dot in the middle mean?](#q-what-does-the-red-circle-with-a-dot-in-the-middle-mean)
     - [Q: Where can I see the log of the extension?](#q-where-can-i-see-the-log-of-the-extension)
+    - [Q: Why does the extension not work when using Dune in watch-mode `dune -w | --watch` or `dune ... --passive-watch`?](#q-why-does-the-extension-not-work-when-using-dune-in-watch-mode-dune--w----watch-or-dune----passive-watch)
 - [Configuration](#configuration)
 - [Changes](#changes)
 - [Contributing](#contributing)
@@ -38,13 +39,12 @@ This extension lets you run OCaml [PPX Expect](https://github.com/janestreet/ppx
 - support for expect PPX tests and inline PPX tests
 - filtering of tests by name
 - parses the test list output of the test runners to fill the Test Explorer view: faster than grepping every source file for test cases and the test tree view is consistent with the test runners
-- retries running dune if another instance has locked the project until dune can acquire the lock
+- retries running dune if another instance has locked the project until dune can acquire the lock or a timeout occurred
 - Uses VS Code's native Test Explorer (no additional extension needed)
 
 ### Drawbacks
 
 - needs dune
-- retries running dune if another instance has locked the project until dune can acquire the lock - may loop forever.
 - when running tests, every test is run on its own, sequentially
 - Uses VS Code's native Test Explorer UI
 
@@ -80,6 +80,8 @@ Either
 [What does the red circle with a dot in the middle mean?](#q-what-does-the-red-circle-with-a-dot-in-the-middle-mean)
 
 [Where can I see the log of the extension?](#q-where-can-i-see-the-log-of-the-extension)
+
+[Q: Why does the extension not work when using Dune in watch-mode `dune -w | --watch` or `dune ... --passive-watch`?](#q-why-does-the-extension-not-work-when-using-dune-in-watch-mode-dune--w----watch-or-dune----passive-watch)
 
 #### Q: What do the groups in the Test Explorer view mean?
 
@@ -118,6 +120,18 @@ A: That means that dune returned an error (not a failed test). Mostly because of
 ![Output tab of Expect Extension](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/output.png)
 
 A: In the `OUTPUT` tab of the Panel, you have to select the extension named `Expect and Inline Tests` in the upper right drop-down menu.
+
+#### Q: Why does the extension not work when using Dune in watch-mode `dune -w | --watch` or `dune ... --passive-watch`?
+
+![Lock error window](https://raw.githubusercontent.com/Release-Candidate/vscode-ocaml-expect-inline/main/images/lock_error.png)
+
+A: Dune uses a file lock (default path: `_build/.lock`) to coordinate multiple Dune processes. Dune in watch mode does not release the file lock at all, so no other Dune process can run at the same time.
+The meaning of the two buttons in the error message is:
+
+- `Cancel` - stop the running Dune process: cancels running Dune, but the extension is **not** going to work until the other Dune process releases the lock.
+- `Retry` - retry running Dune: Either stop the Dune process in watch mode or wait until all other Dune processes have finished their work. If no other Dune process is running, click `Retry`.
+
+For a future version of Dune the plan is to be able to use the Dune process in watch mode with another dune running e.g. `dune [rpc] exec` and get the output on the 'client' Dune process.
 
 ## Configuration
 

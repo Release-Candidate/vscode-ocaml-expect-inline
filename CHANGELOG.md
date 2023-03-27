@@ -1,5 +1,14 @@
 # OCaml Expect and Inline Test Explorer for Visual Studio Code Changelog
 
+## Version 0.7.0 (2023-03-27)
+
+- If the dune lock can't be acquired for 30s, raise an error window and ask the user what to do.
+- Update the documentation.
+
+### Bugfixes
+
+- Make `Cancel Test Run` stop Dune processes waiting for the lock too. See [Issue #9](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/issues/9).
+
 ## Version 0.6.0 (2023-03-25)
 
 - Show the expected and actual values of Expect tests in VS Codes' diff view. See [Issue #6](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/issues/6).

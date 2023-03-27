@@ -10,12 +10,12 @@
  * Run the tests that are being requested by the user.
  */
 
+import * as c from "./constants";
 import * as h from "./extension_helpers";
 import * as io from "./osInteraction";
 import * as p from "./parsing";
 import * as t from "./list_tests";
 import * as vscode from "vscode";
-import { getCfgDunePath } from "./constants";
 
 /**
  * Run or cancel running tests.
@@ -26,6 +26,7 @@ import { getCfgDunePath } from "./constants";
  * @param token The `CancellationToken`. Whether the user wants to cancel the
  * test runs.
  */
+// eslint-disable-next-line max-statements
 export async function runHandler(
     env: h.Env,
     request: vscode.TestRunRequest,
@@ -35,8 +36,8 @@ export async function runHandler(
     const run = env.controller.createTestRun(request);
     const tests = t.testList(request, env.controller, toDelete);
     tests.forEach((ti) => run.started(ti));
-
     for (const test of tests) {
+        // eslint-disable-next-line no-negated-condition
         if (!token.isCancellationRequested) {
             const passEnv = {
                 config: env.config,
@@ -47,8 +48,13 @@ export async function runHandler(
             };
             passEnv.run = run;
             // eslint-disable-next-line no-await-in-loop
-            await runSingleTest(passEnv, test);
+            await runSingleTest(passEnv, test, token);
+        } else {
+            run.skipped(test);
         }
+    }
+    if (token.isCancellationRequested) {
+        env.outChannel.appendLine(`Cancelling tests.`);
     }
     run.end();
 }
@@ -58,7 +64,11 @@ export async function runHandler(
  * @param env The environment needed to run a test.
  * @param test The test to run.
  */
-async function runSingleTest(env: h.Env, test: vscode.TestItem) {
+async function runSingleTest(
+    env: h.Env,
+    test: vscode.TestItem,
+    token: vscode.CancellationToken
+) {
     const ret = env.testData.get(test);
     env.outChannel.appendLine(
         `Running test "${test.parent ? test.parent.label : ""}   ${
@@ -70,8 +80,9 @@ async function runSingleTest(env: h.Env, test: vscode.TestItem) {
         const startTime = Date.now();
         test.busy = true;
         const out = await io.runRunnerTestsDune({
+            token,
             root,
-            duneCmd: getCfgDunePath(env.config),
+            duneCmd: c.getCfgDunePath(env.config),
             runner,
             library,
             tests: [`${test.parent?.label}:${test.id}`],
