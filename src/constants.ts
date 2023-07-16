@@ -256,7 +256,6 @@ export function getCfgDiscoverInSources(config: vscode.WorkspaceConfiguration) {
 
 /**
  * Return the configuration value for `dunePath`.
- *
  * @param config The configuration object to use.
  * @returns The configuration value for `dunePath`.
  */
@@ -270,7 +269,6 @@ export function getCfgDunePath(config: vscode.WorkspaceConfiguration) {
 
 /**
  * Return the configuration value for `excludeRunners`.
- *
  * @param config The configuration object to use.
  * @returns The configuration value for `excludeRunners`.
  */
