@@ -554,7 +554,6 @@ function getName(match: RegExpMatchArray) {
 /**
  * Return `true`, if the 'no tests found' error message has been found in the
  * given string, `false` else.
- *
  * @param text The string to parse for the 'no tests found' error.
  * @returns `true`, if the 'no tests found' error message has been found in the
  * given string, `false` else.

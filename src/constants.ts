@@ -228,7 +228,6 @@ export const cfgDefaultExcludeRunners: string[] = [];
 
 /**
  * Return the configuration value for `discoverOnStartup`.
- *
  * @param config The configuration object to use.
  * @returns The configuration value for `discoverOnStartup`.
  */
@@ -242,7 +241,6 @@ export function getCfgDiscover(config: vscode.WorkspaceConfiguration) {
 
 /**
  * Return the configuration value for `discoverOnStartup`.
- *
  * @param config The configuration object to use.
  * @returns The configuration value for `discoverOnStartup`.
  */
