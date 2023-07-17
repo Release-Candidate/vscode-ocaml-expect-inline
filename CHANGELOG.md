@@ -1,5 +1,15 @@
 # OCaml Expect and Inline Test Explorer for Visual Studio Code Changelog
 
+## Version 0.7.1 (2023-07-17)
+
+### Bugfixes
+
+- Make the package smaller by not including GIFs.
+
+### Internal Changes
+
+- Update dependencies to new versions and make Yarn compatible to version 3
+
 ## Version 0.7.0 (2023-03-27)
 
 - If the dune lock can't be acquired for 30s, raise an error window and ask the user what to do.
