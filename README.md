@@ -1,3 +1,8 @@
+> [!WARNING]
+> As I use neither OCaml nor VS Code any more I will not add any new features to this extension.
+> Feel free to fork it for yourself.
+> I would also change the owner if you would like to be the official maintainer of this extension.
+
 # OCaml Expect and Inline Test Explorer for Visual Studio Code
 
 [![Test](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/actions/workflows/test.yml/badge.svg)](https://github.com/Release-Candidate/vscode-ocaml-expect-inline/actions/workflows/test.yml)
